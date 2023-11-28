@@ -101,10 +101,6 @@ async def help(message):
 async def help(message):
     await bot.reply_to(message, config_controller.TEXT_HELP)
 
-@bot.message_handler(commands=['pizda'])
-async def help(message):
-    sys.exit()
-
 @bot.message_handler(commands=['menu'])
 async def menu(message):
     await bot.send_message(message.chat.id, "Menu for admin and moderator", reply_markup=markups.generate_markup_menu())
