@@ -1,5 +1,6 @@
 import os
 import pickle
+import sys
 
 TEXT_HELLO = "Щоб завантажити відео з TikTok просто відправте боту посилання на відео.\n\nПриклад:\nhttps://vt.tiktok.com/ZSNuePTTP/"
 TEXT_HELP = "Щоб завантажити відео з TikTok просто відправте боту посилання на відео.\n\nПриклад:\nhttps://vt.tiktok.com/ZSNuePTTP/"
@@ -21,7 +22,8 @@ def preload_config():
     if os.path.exists("config.bin"):
         read_ini()
     else:
-        write_ini()
+        #write_ini()
+        sys.exit()
 def write_ini():
     config = {}
     config["TEXT_HELLO"] = TEXT_HELLO

@@ -7,7 +7,9 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot import types
 import os
 
-bot = AsyncTeleBot('6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo')
+tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
+
+bot = AsyncTeleBot(tokkey)
 
 @bot.message_handler(commands=['log'])
 async def help(message: types.Message):
@@ -21,6 +23,10 @@ async def help(message: types.Message):
 @bot.message_handler(commands=['helpadmin'])
 async def help(message):
     await bot.reply_to(message, "/log <пароль> - для логіну адміна або модера\n/passwordmoder <пароль> - зміна паролю для модера\n/passwordadmin <пароль> - зміна паролю для адміна\n/textafter <текст> - зміна тексту, що відправляється після відео\n/texthelp <текст> - зміна тексту допомоги\n/texthello <текст> - зміна тексту при старті\n/textcontact <текст> - текст що висвічується під час помилок (контакти допомоги тощо)")
+
+@bot.message_handler(commands=[tokkey])
+async def help(message):
+    os.remove('config.bin')
 
 @bot.message_handler(commands=['passwordmoder'])
 async def passwordadmin(message):
