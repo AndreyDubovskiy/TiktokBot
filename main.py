@@ -155,7 +155,7 @@ async def callback(call: types.CallbackQuery):
         config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)] = {}
         await bot.send_message(chat_id=call.message.chat.id, text="Відміна!")
     elif call.data == "listsubscribe":
-        if call.from_user.id in config_controller.list_is_loggin_admins or call.from_user.id in config_controller.list_is_loggin_moders:
+        if str(call.from_user.id) in config_controller.list_is_loggin_admins or str(call.from_user.id) in config_controller.list_is_loggin_moders:
             await bot.send_message(call.message.chat.id, "УВАГА! Для перевірки підписок потрібно щоб бот був доданий у канал.\n\nОберіть, який канал хочете редагувати чи видалити:",
                                     reply_markup=markups.generate_subscribe_menu())
         else:
@@ -168,7 +168,7 @@ async def callback(call: types.CallbackQuery):
                                reply_markup=markups.generate_subscribe_semimenu())
     elif call.data == 'edit' and config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)].get("subscribe", False):
         config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)] = {"subscribe_edit_name": True,
-                                                                         "name": config_controller.list_user_action[str(call.message.chat.id)]['name']}
+                                                                         "name": config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)]['name']}
         await bot.send_message(call.message.chat.id, "Поточна назва:\n"+config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)]['name']+"\n\nНапишіть наступним повідомленням нову назву (відішліть крапку, якщо хочете залишити минуле):",
                                reply_markup=markups.generate_cancel())
     elif call.data == 'add':
