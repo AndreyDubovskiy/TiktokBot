@@ -116,6 +116,7 @@ def del_subscribe(key):
     global LIST_SUBSCRIBE
     if LIST_SUBSCRIBE.get(key, None) != None:
         LIST_SUBSCRIBE.__delitem__(key)
+        write_ini()
         return True
     else:
         return False
@@ -129,6 +130,7 @@ def add_or_edit_subscribe(key, tg_link, tg_id):
             v_tg_link = str(tg_link)
             LIST_SUBSCRIBE[v_key] = {'url': v_tg_link,
                                      'id': v_tg_id}
+            write_ini()
             return True
         else:
             return False
