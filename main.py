@@ -112,7 +112,7 @@ async def menu(message):
     await bot.send_message(message.chat.id, "Menu for admin and moderator", reply_markup=markups.generate_markup_menu())
 
 @bot.message_handler(func=lambda message: message.text.startswith("https://www.tiktok.com") or message.text.startswith("https://vm.tiktok.com") or message.text.startswith("https://vt.tiktok.com"), content_types=['text'])
-async def download(message):
+async def download(message: types.Message):
     try:
         if await is_subscribe(message.from_user.id):
             chat_id = str(message.from_user.id) + str(message.chat.id)
@@ -304,13 +304,11 @@ async def is_subscribe(chat_id):
             return True
         for i in config_controller.LIST_SUBSCRIBE:
             res = await bot.get_chat_member(chat_id=int(config_controller.LIST_SUBSCRIBE[i]['id']), user_id=int(chat_id))
-            print(res.status)
             if res.status == "left":
                 return False
         return True
     except Exception as ex:
         print("error")
-        ex.with_traceback()
         return True
 
 
