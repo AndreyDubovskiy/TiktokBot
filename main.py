@@ -124,7 +124,6 @@ async def download(message):
         else:
             await bot.send_message(chat_id=message.chat.id, text="Ви не підписані на канал!\nДля користування ботом підпишіться на канали:", reply_markup=markups.generate_markup_subscribe())
     except Exception as ex:
-        ex.with_traceback()
         print(ex)
         await bot.reply_to(message, config_controller.CONTACT_HELP)
 

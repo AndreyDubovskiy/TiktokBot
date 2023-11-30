@@ -10,6 +10,10 @@ def down(url, outfile):
                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"})
   link_to_video = resp.text.split('href="')[1].split('"')[0]
   filereq = req.get(link_to_video, stream=True)
+  file_size = int(filereq.headers.get('Content-Length', 0))
+  #print(file_size, filereq.status_code)
+  if (file_size <= 0):
+      raise
   with open(outfile, "wb") as receive:
     shutil.copyfileobj(filereq.raw, receive)
   del filereq
