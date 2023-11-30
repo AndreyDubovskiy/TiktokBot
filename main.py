@@ -180,7 +180,7 @@ async def callback(call: types.CallbackQuery):
         else:
             await bot.send_message(call.message.chat.id, config_controller.CONTACT_HELP)
     elif call.data == 'check':
-        if await is_subscribe(call.message.chat.id):
+        if await is_subscribe(str(call.from_user.id)):
             await bot.send_message(call.message.chat.id, "Ви підписались! Тепер можете користуватись ботом")
         else:
             await bot.send_message(call.message.chat.id, "Ви ще не підписались!")
