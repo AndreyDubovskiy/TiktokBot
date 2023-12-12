@@ -20,5 +20,5 @@ def down(url, outfile):
 
 def get_text_video(url):
     res = req.get(url=url,
-                  headers={"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"})
+                  headers={"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"})
     return res.text.split(',"desc":"')[1].split('"')[0]
