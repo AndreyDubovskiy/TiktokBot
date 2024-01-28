@@ -8,4 +8,5 @@ RUN apk add --no-cache tesseract-ocr python3 py3-numpy && \
     pip3 install matplotlib && \
     apk del .build-deps
 RUN pip install -r requirements.txt
+RUN apk add --no-cache ffmpeg
 CMD ["python", "main.py"]
