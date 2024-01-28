@@ -46,6 +46,7 @@ async def download(message: types.Message):
     except Exception as ex:
         try:
             chat_id = str(message.from_user.id) + str(message.chat.id)
+            print("Start Foto", chat_id, message.text)
             downloader.get_video_from_foto_tiktok(message.text, chat_id)
             await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
             with open(str(chat_id) + ".mp4", 'rb') as file:

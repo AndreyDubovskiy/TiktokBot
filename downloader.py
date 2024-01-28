@@ -35,16 +35,27 @@ def get_from_url(url, file_name):
 
 
 def get_video_from_foto_tiktok(url, filename):
-    resp = req.get(url=url,
+    print("START", url, filename)
+    resp = req.post("https://ssstik.io/abc?url=dl",
+                    data={"id": url,
+                          "locale": "en",
+                          "tt": "UGh1UGtk"},
                     headers={"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"})
-    str_urls = resp.text.split("\"imagePost\":")[1].split("\"locationCreated\"")[0]
-    music_url = resp.text.split("\"playUrl\":\"")[1].split("\",")[0].replace("\\u002F", "/")
+                             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"})
+    links = resp.text.split("<a href=\"")
+    links.pop(0)
+    url_music = links.pop(-1).split("\"")[0]
     urls = []
-    for i in str_urls.split("\"urlList\":[\""):
-        if i.count("https") == 0:
-            continue
-        urls.append(i.split("\"]}")[0].replace("\\u002F", "/"))
+
+
+    for i in links:
+        urls.append(i.split("\"")[0])
+        print(i.split("\"")[0])
+
+    print(urls)
+    print(url_music)
+
+    music_url = url_music
     index = 0
     image_paths = []
     for i in urls:
