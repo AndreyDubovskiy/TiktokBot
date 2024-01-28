@@ -2,8 +2,10 @@ FROM python:alpine3.9
 WORKDIR /app
 COPY . /app
 RUN pip install --upgrade pip
-RUN apt install -y libjpeg-dev zlib1g-dev
-RUN pip3 install --upgrade pip setuptools wheel
-RUN pip3 install matplotlib
+RUN apk add --no-cache tesseract-ocr python3 py3-numpy && \
+    pip3 install --upgrade pip setuptools wheel && \
+    apk add --no-cache --virtual .build-deps gcc g++ zlib-dev make python3-dev py-numpy-dev jpeg-dev && \
+    pip3 install matplotlib && \
+    apk del .build-deps
 RUN pip install -r requirements.txt
 CMD ["python", "main.py"]
