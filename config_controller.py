@@ -84,7 +84,7 @@ def get_id_post():
     return id
 
 
-def add_or_edit_post(key: str, text: str = None, urls: list[str] = None, photos: list[str] = None, videos: list[str] = None):
+def add_or_edit_post(key: str, text: str = None, urls: list = None, photos: list = None, videos: list = None):
     global LIST_POSTS
     try:
         v_key = key
