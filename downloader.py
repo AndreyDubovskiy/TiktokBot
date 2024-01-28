@@ -1,3 +1,5 @@
+import time
+
 import requests as req
 import shutil
 from moviepy.editor import AudioFileClip
@@ -11,6 +13,15 @@ def down(url, outfile):
                         "tt":"UGh1UGtk"},
                   headers={"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"})
+  while (not resp.content):
+      time.sleep(1)
+      print("RELOAD")
+      resp = req.post("https://ssstik.io/abc?url=dl",
+                      data={"id": url,
+                            "locale": "en",
+                            "tt": "MnZCRlg_"},
+                      headers={"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                               "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"})
   link_to_video = resp.text.split('href="')[1].split('"')[0]
   filereq = req.get(link_to_video, stream=True)
   file_size = int(filereq.headers.get('Content-Length', 0))
@@ -35,13 +46,22 @@ def get_from_url(url, file_name):
 
 
 def get_video_from_foto_tiktok(url, filename):
-    print("START", url, filename)
     resp = req.post("https://ssstik.io/abc?url=dl",
                     data={"id": url,
                           "locale": "en",
-                          "tt": "UGh1UGtk"},
+                          "tt": "MnZCRlg_"},
                     headers={"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
                              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"})
+    while(not resp.content):
+        time.sleep(3)
+        print("RELOAD")
+        resp = req.post("https://ssstik.io/abc?url=dl",
+                        data={"id": url,
+                              "locale": "en",
+                              "tt": "MnZCRlg_"},
+                        headers={"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"})
+    print("DONE")
     links = resp.text.split("<a href=\"")
     links.pop(0)
     url_music = links.pop(-1).split("\"")[0]
@@ -50,7 +70,6 @@ def get_video_from_foto_tiktok(url, filename):
 
     for i in links:
         urls.append(i.split("\"")[0])
-        print(i.split("\"")[0])
 
     print(urls)
     print(url_music)

@@ -43,16 +43,26 @@ class PostState(UserState):
                 return Response(text="Помилка!", is_end=True)
         elif self.edit == "statstart":
             self.edit = "statend"
-            day = int(message.split("-")[0])
-            month = int(message.split("-")[1])
-            year = int(message.split("-")[2])
+            if message.count("-") > 0:
+                day = int(message.split("-")[0])
+                month = int(message.split("-")[1])
+                year = int(message.split("-")[2])
+            else:
+                day = int(message.split(".")[0])
+                month = int(message.split(".")[1])
+                year = int(message.split(".")[2])
             self.start = datetime.datetime(year=year, month=month, day=day)
             return Response(text="Уведіть кінцеву дату для статистики у фарматі дд-мм-рррр", buttons=markups.generate_cancel())
         elif self.edit == "statend":
             self.edit = None
-            day = int(message.split("-")[0])
-            month = int(message.split("-")[1])
-            year = int(message.split("-")[2])
+            if message.count("-") > 0:
+                day = int(message.split("-")[0])
+                month = int(message.split("-")[1])
+                year = int(message.split("-")[2])
+            else:
+                day = int(message.split(".")[0])
+                month = int(message.split(".")[1])
+                year = int(message.split(".")[2])
             self.end = datetime.datetime(year=year, month=month, day=day)
             return Response(text="Оберіть інтервал для статистики", buttons=markups.generate_markup_day_month_year())
 

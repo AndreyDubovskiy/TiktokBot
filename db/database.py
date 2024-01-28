@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from typing import List
 
-engine = create_engine("sqlite:///mainbase.db", echo=True)
+engine = create_engine("sqlite:///mainbase.db", echo=False)
 
 BaseModel.metadata.create_all(engine)
 

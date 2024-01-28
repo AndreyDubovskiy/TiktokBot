@@ -33,18 +33,15 @@ async def download(message: types.Message):
             await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
             with open(str(chat_id) + ".mp4", 'rb') as file:
                 await bot.send_video(chat_id=message.chat.id, video=file)
-            video_text = ""
-            try:
-                video_text = downloader.get_text_video(message.text)
-                video_text +="\n\n"
-            except Exception as ex:
-                print(ex)
-            await bot.send_message(chat_id=message.chat.id, text=video_text+config_controller.TEXT_AFTER_VIDEO)
+            await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO)
             os.remove(str(chat_id) + ".mp4")
         else:
             await bot.send_message(chat_id=message.chat.id, text="Ви не підписані на канал!\nДля користування ботом підпишіться на канали:", reply_markup=markups.generate_markup_subscribe())
     except Exception as ex:
         try:
+            await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
+            await bot.reply_to(message, config_controller.CONTACT_HELP)
+            return
             chat_id = str(message.from_user.id) + str(message.chat.id)
             print("Start Foto", chat_id, message.text)
             downloader.get_video_from_foto_tiktok(message.text, chat_id)
@@ -52,13 +49,7 @@ async def download(message: types.Message):
             with open(str(chat_id) + ".mp4", 'rb') as file:
                 await bot.send_video(chat_id=message.chat.id, video=file)
             os.remove(str(chat_id) + ".mp4")
-            video_text = ""
-            try:
-                video_text = downloader.get_text_video(message.text)
-                video_text += "\n\n"
-            except Exception as ex:
-                print(ex)
-            await bot.send_message(chat_id=message.chat.id, text=video_text + config_controller.TEXT_AFTER_VIDEO)
+            await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO)
         except Exception as ex:
             await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
             await bot.reply_to(message, config_controller.CONTACT_HELP)
