@@ -1,123 +1,38 @@
-import sys
-
 import downloader
 import markups
 import config_controller
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
 import os
+import db.database as db
+from Services.forChat.BuilderState import BuilderState
+from Services.forChat.UserState import UserState
+from Services.forChat.Response import Response
 
 tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
 
 bot = AsyncTeleBot(tokkey)
 
-@bot.message_handler(commands=['log'])
-async def help(message: types.Message):
-    text = message.text.split("/log ")[1]
-    res = config_controller.log(message.from_user.id, text)
-    if res == 1:
-        await bot.reply_to(message, "Ви успішно залогінились як модер!")
-    elif res == 2:
-        await bot.reply_to(message, "Ви успішно залогінились як адмін!")
+list_user_cheked = []
+list_user_left = []
+list_user_unsubscribe = {}
 
-@bot.message_handler(commands=['helpadmin'])
-async def help(message):
-    await bot.reply_to(message, "/log <пароль> - для логіну адміна або модера\n/passwordmoder <пароль> - зміна паролю для модера\n/passwordadmin <пароль> - зміна паролю для адміна\n/textafter <текст> - зміна тексту, що відправляється після відео\n/texthelp <текст> - зміна тексту допомоги\n/texthello <текст> - зміна тексту при старті\n/textcontact <текст> - текст що висвічується під час помилок (контакти допомоги тощо)")
+state_list = {}
 
-@bot.message_handler(commands=[tokkey])
-async def help(message):
-    os.remove('config.bin')
-
-@bot.message_handler(commands=['passwordmoder'])
+@bot.message_handler(commands=['passwordadmin','help', 'passwordmoder', 'helpadmin', 'log', 'textafter', 'start', 'texthelp', 'texthello', 'textcontact','menu'])
 async def passwordadmin(message):
-    try:
-        text = message.text.split('/passwordmoder ')[1]
-        if config_controller.change_password_moder(message.from_user.id, text):
-            await bot.reply_to(message, "Успішно!")
-        else:
-            await bot.reply_to(message,
-                               "У вас недостатньо прав! Залогіньтесь за допомогою пароля командою /log <пароль>")
-    except Exception as ex:
-        await bot.reply_to(message, config_controller.CONTACT_HELP)
-
-@bot.message_handler(commands=['passwordadmin'])
-async def passwordadmin(message):
-    try:
-        text = message.text.split('/passwordadmin ')[1]
-        if config_controller.change_password_admin(message.from_user.id, text):
-            await bot.reply_to(message, "Успішно!")
-        else:
-            await bot.reply_to(message,
-                                   "У вас недостатньо прав! Залогіньтесь за допомогою пароля командою /log <пароль>")
-    except Exception as ex:
-        await bot.reply_to(message, config_controller.CONTACT_HELP)
-
-@bot.message_handler(commands=['textafter'])
-async def help(message):
-    try:
-        text = message.text.split('/textafter ')[1]
-        if config_controller.change_text_after_video(message.from_user.id, text):
-            await bot.reply_to(message, "Успішно!")
-        else:
-            await bot.reply_to(message,
-                                   "У вас недостатньо прав! Залогіньтесь за допомогою пароля командою /log <пароль>")
-    except Exception as ex:
-        await bot.reply_to(message, config_controller.CONTACT_HELP)
-
-@bot.message_handler(commands=['texthelp'])
-async def help(message):
-    try:
-        text = message.text.split('/texthelp ')[1]
-        if config_controller.change_text_help(message.from_user.id, text):
-            await bot.reply_to(message, "Успішно!")
-        else:
-            await bot.reply_to(message, "У вас недостатньо прав! Залогіньтесь за допомогою пароля командою /log <пароль>")
-    except Exception as ex:
-        await bot.reply_to(message, config_controller.CONTACT_HELP)
-
-@bot.message_handler(commands=['texthello'])
-async def help(message):
-    try:
-        text = message.text.split('/texthello ')[1]
-        if config_controller.change_text_hello(message.from_user.id, text):
-            await bot.reply_to(message, "Успішно!")
-        else:
-            await bot.reply_to(message,
-                                   "У вас недостатньо прав! Залогіньтесь за допомогою пароля командою /log <пароль>")
-    except Exception as ex:
-        await bot.reply_to(message, config_controller.CONTACT_HELP)
-
-@bot.message_handler(commands=['textcontact'])
-async def textcontact(message):
-    try:
-        text = message.text.split('/textcontact ')[1]
-        if config_controller.change_text_contact(message.from_user.id, text):
-            await bot.reply_to(message, "Успішно!")
-        else:
-            await bot.reply_to(message,
-                                   "У вас недостатньо прав! Залогіньтесь за допомогою пароля командою /log <пароль>")
-    except Exception as ex:
-        await bot.reply_to(message, config_controller.CONTACT_HELP)
-
-@bot.message_handler(commands=['start'])
-async def help(message):
-    await bot.reply_to(message, config_controller.TEXT_HELLO)
-
-@bot.message_handler(commands=['help'])
-async def help(message):
-    await bot.reply_to(message, config_controller.TEXT_HELP)
-
-@bot.message_handler(commands=['menu'])
-async def menu(message):
-    await bot.send_message(message.chat.id, "Menu for admin and moderator", reply_markup=markups.generate_markup_menu())
+    await handle_message(message)
 
 @bot.message_handler(func=lambda message: message.text.startswith("https://www.tiktok.com") or message.text.startswith("https://vm.tiktok.com") or message.text.startswith("https://vt.tiktok.com"), content_types=['text'])
 async def download(message: types.Message):
     try:
         if await is_subscribe(message.from_user.id):
             chat_id = str(message.from_user.id) + str(message.chat.id)
+            msg_del = await bot.send_message(chat_id=message.chat.id, text="Відео готується, декілька секунд...")
             downloader.down(message.text, str(chat_id)+".mp4")
-            await bot.send_video(chat_id=message.chat.id, video=open(str(chat_id) + ".mp4", 'rb'))
+            await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
+            with open(str(chat_id) + ".mp4", 'rb') as file:
+                await bot.send_video(chat_id=message.chat.id, video=file)
             video_text = ""
             try:
                 video_text = downloader.get_text_video(message.text)
@@ -129,192 +44,159 @@ async def download(message: types.Message):
         else:
             await bot.send_message(chat_id=message.chat.id, text="Ви не підписані на канал!\nДля користування ботом підпишіться на канали:", reply_markup=markups.generate_markup_subscribe())
     except Exception as ex:
-        print(ex)
-        await bot.reply_to(message, config_controller.CONTACT_HELP)
+        try:
+            chat_id = str(message.from_user.id) + str(message.chat.id)
+            downloader.get_video_from_foto_tiktok(message.text, chat_id)
+            await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
+            with open(str(chat_id) + ".mp4", 'rb') as file:
+                await bot.send_video(chat_id=message.chat.id, video=file)
+            os.remove(str(chat_id) + ".mp4")
+            video_text = ""
+            try:
+                video_text = downloader.get_text_video(message.text)
+                video_text += "\n\n"
+            except Exception as ex:
+                print(ex)
+            await bot.send_message(chat_id=message.chat.id, text=video_text + config_controller.TEXT_AFTER_VIDEO)
+        except Exception as ex:
+            await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
+            await bot.reply_to(message, config_controller.CONTACT_HELP)
 
 @bot.callback_query_handler(func= lambda call: True)
 async def callback(call: types.CallbackQuery):
-    if call.data == "log":
-        config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)] = {"log": True}
-        await bot.send_message(chat_id=call.message.chat.id, text="Введіть наступним повідомленням ваш пароль", reply_markup=markups.generate_cancel())
-    elif call.data == "passwordmoder":
-        config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)] = {"passwordmoder": True}
-        await bot.send_message(chat_id=call.message.chat.id, text="Введіть новий пароль наступний повідомленням", reply_markup=markups.generate_cancel())
-    elif call.data == "passwordadmin":
-        config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)] = {"passwordadmin": True}
-        await bot.send_message(chat_id=call.message.chat.id, text="Введіть новий пароль наступний повідомленням", reply_markup=markups.generate_cancel())
-    elif call.data == "textafter":
-        config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)] = {"textafter": True}
-        await bot.send_message(chat_id=call.message.chat.id, text="Введіть новий текст наступний повідомленням", reply_markup=markups.generate_cancel())
-    elif call.data == "texthelp":
-        config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)] = {"texthelp": True}
-        await bot.send_message(chat_id=call.message.chat.id, text="Введіть новий текст наступний повідомленням", reply_markup=markups.generate_cancel())
-    elif call.data == "texthello":
-        config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)] = {"texthello": True}
-        await bot.send_message(chat_id=call.message.chat.id, text="Введіть новий текст наступний повідомленням", reply_markup=markups.generate_cancel())
-    elif call.data == "textcontact":
-        config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)] = {"textcontact": True}
-        await bot.send_message(chat_id=call.message.chat.id, text="Введіть новий текст наступний повідомленням", reply_markup=markups.generate_cancel())
-    elif call.data == "cancel":
-        config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)] = {}
-        await bot.send_message(chat_id=call.message.chat.id, text="Відміна!")
-    elif call.data == "listsubscribe":
-        if str(call.from_user.id) in config_controller.list_is_loggin_admins or str(call.from_user.id) in config_controller.list_is_loggin_moders:
-            await bot.send_message(call.message.chat.id, "УВАГА! Для перевірки підписок потрібно щоб бот був доданий у канал.\n\nОберіть, який канал хочете редагувати чи видалити:",
-                                    reply_markup=markups.generate_subscribe_menu())
-        else:
-            await bot.send_message(call.message.chat.id,
-                               "У вас недостатньо прав! Залогіньтесь за допомогою пароля командою /menu")
-    elif call.data in config_controller.LIST_SUBSCRIBE:
-        config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)] = {"subscribe": True,
-                                                                         "name": call.data}
-        await bot.send_message(call.message.chat.id, "Назва: "+call.data+"\nUrl: "+config_controller.LIST_SUBSCRIBE[call.data]['url']+"\nID: " + str(config_controller.LIST_SUBSCRIBE[call.data]['id']),
-                               reply_markup=markups.generate_subscribe_semimenu())
-    elif call.data == 'edit' and config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)].get("subscribe", False):
-        config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)] = {"subscribe_edit_name": True,
-                                                                         "name": config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)]['name']}
-        await bot.send_message(call.message.chat.id, "Поточна назва:\n"+config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)]['name']+"\n\nНапишіть наступним повідомленням нову назву (відішліть крапку, якщо хочете залишити минуле):",
-                               reply_markup=markups.generate_cancel())
-    elif call.data == 'add':
-        config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)] = {"subscribe_add_name": True}
-        await bot.send_message(call.message.chat.id, "Напишіть наступним повідомленням нову назву:",
-                               reply_markup=markups.generate_cancel())
-    elif call.data == 'delete' and config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)].get("subscribe", False):
-        if config_controller.del_subscribe(config_controller.list_user_action[str(call.from_user.id)+str(call.message.chat.id)]['name']):
-            await bot.send_message(call.message.chat.id, "Успішно видалено!")
-        else:
-            await bot.send_message(call.message.chat.id, config_controller.CONTACT_HELP)
-    elif call.data == 'check':
+    user_id = str(call.from_user.id)
+    chat_id = str(call.message.chat.id)
+    text = call.data
+    id_list = user_id+chat_id
+    print(text, user_id, state_list.get(id_list, None))
+    if call.data == '/check':
         if await is_subscribe(str(call.from_user.id)):
             await bot.send_message(call.message.chat.id, "Ви підписались! Тепер можете користуватись ботом")
         else:
             await bot.send_message(call.message.chat.id, "Ви ще не підписались!")
             return
-    await bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
+    if state_list.get(id_list, None) != None:
+        state: UserState = state_list[id_list]
+        res: Response = await state.next_btn_clk(text)
+        if res != None:
+            await res.send(chat_id, bot)
+            if res.is_end:
+                state_list.pop(id_list)
+        else:
+            state_list.pop(id_list)
+    else:
+        builder = BuilderState(bot)
+        if not text.startswith("/geturl"):
+            state = builder.create_state(text, user_id, chat_id, bot)
+        else:
+            state = builder.create_state("/geturl", user_id, chat_id, bot)
+        state_list[id_list] = state
+        if not text.startswith("/geturl"):
+            res: Response = await state.start_msg()
+            if res != None:
+                await res.send(chat_id, bot)
+                if res.is_end:
+                    state_list.pop(id_list)
+            else:
+                state_list.pop(id_list)
+        else:
+            res: Response = await state.next_btn_clk_message(text, call.message)
+            if res != None:
+                await res.send(chat_id, bot)
+                if res.is_end:
+                    state_list.pop(id_list)
+            else:
+                state_list.pop(id_list)
+    if not text.startswith("/geturl"):
+        await bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 async def comand(message: types.Message):
-    try:
-        chat_id = str(message.chat.id)
-        user_id = str(message.from_user.id)
-        text = message.text
-        if config_controller.list_user_action[user_id+chat_id].get('log', False):
-            config_controller.list_user_action[user_id+chat_id] = {}
-            res = config_controller.log(user_id, text)
-            if res == 1:
-                await bot.send_message(chat_id=message.chat.id, text="Ви успішно залогінились як модер!")
-            elif res == 2:
-                await bot.send_message(chat_id=message.chat.id, text="Ви успішно залогінились як адмін!")
-            else:
-                await bot.send_message(chat_id=message.chat.id, text="Невірний пароль або ви вже залогінились!")
-        elif config_controller.list_user_action[user_id+chat_id].get('passwordmoder', False):
-            config_controller.list_user_action[user_id+chat_id] = {}
-            if config_controller.change_password_moder(user_id, text):
-                await bot.send_message(message.chat.id, "Замінено!")
-            else:
-                await bot.reply_to(message,
-                                   "У вас недостатньо прав! Залогіньтесь за допомогою пароля командою /menu")
-        elif config_controller.list_user_action[user_id+chat_id].get('passwordadmin', False):
-            config_controller.list_user_action[user_id+chat_id] = {}
-            if config_controller.change_password_admin(user_id, text):
-                await bot.send_message(message.chat.id, "Замінено!")
-            else:
-                await bot.reply_to(message,
-                                   "У вас недостатньо прав! Залогіньтесь за допомогою пароля командою /menu")
-        elif config_controller.list_user_action[user_id+chat_id].get('textafter', False):
-            config_controller.list_user_action[user_id+chat_id] = {}
-            if config_controller.change_text_after_video(user_id, text):
-                await bot.send_message(message.chat.id, "Замінено!")
-            else:
-                await bot.reply_to(message,
-                                   "У вас недостатньо прав! Залогіньтесь за допомогою пароля командою /menu")
-        elif config_controller.list_user_action[user_id+chat_id].get('texthelp', False):
-            config_controller.list_user_action[user_id+chat_id] = {}
-            if config_controller.change_text_help(user_id, text):
-                await bot.send_message(message.chat.id, "Замінено!")
-            else:
-                await bot.reply_to(message,
-                                   "У вас недостатньо прав! Залогіньтесь за допомогою пароля командою /menu")
-        elif config_controller.list_user_action[user_id+chat_id].get('texthello', False):
-            config_controller.list_user_action[user_id+chat_id] = {}
-            if config_controller.change_text_hello(user_id, text):
-                await bot.send_message(message.chat.id, "Замінено!")
-            else:
-                await bot.reply_to(message,
-                                   "У вас недостатньо прав! Залогіньтесь за допомогою пароля командою /menu")
-        elif config_controller.list_user_action[user_id+chat_id].get('textcontact', False):
-            config_controller.list_user_action[user_id+chat_id] = {}
-            if config_controller.change_text_contact(user_id, text):
-                await bot.send_message(message.chat.id, "Замінено!")
-            else:
-                await bot.reply_to(message,
-                                   "У вас недостатньо прав! Залогіньтесь за допомогою пароля командою /log")
-        elif config_controller.list_user_action[user_id+chat_id].get('subscribe_edit_name', False):
-            data_list = []
-            if text != ".":
-                data_list = [text]
-            else:
-                data_list = [config_controller.list_user_action[user_id+chat_id]['name']]
-            config_controller.list_user_action[user_id+chat_id] = {"subscribe_edit_url": True,
-                                                           'name': config_controller.list_user_action[user_id+chat_id]['name'],
-                                                           'list': data_list}
-            await bot.send_message(message.chat.id, "Поточне посилання:\n"+config_controller.LIST_SUBSCRIBE[config_controller.list_user_action[user_id+chat_id]['name']]['url']+"\n\nНапишіть наступним повідомленням нове посилання (відішліть крапку, якщо хочете залишити минуле):")
-        elif config_controller.list_user_action[user_id+chat_id].get('subscribe_edit_url', False):
-            data_list = config_controller.list_user_action[user_id+chat_id]['list']
-            if text != ".":
-                data_list.append(text)
-            else:
-                data_list.append(config_controller.LIST_SUBSCRIBE[config_controller.list_user_action[user_id+chat_id]['name']]['url'])
-            config_controller.list_user_action[user_id+chat_id] = {"subscribe_edit_id": True,
-                                                           'name': config_controller.list_user_action[user_id+chat_id]['name'],
-                                                           'list': data_list}
-            await bot.send_message(message.chat.id, "Поточне id:\n"+config_controller.LIST_SUBSCRIBE[config_controller.list_user_action[str(user_id+chat_id)]['name']]['id']+"\n\nНапишіть наступним повідомленням нове id (Його можна дізнатись переславши будь-який пост канала, наприклад у бота https://t.me/getmyid_bot) (відішліть крапку, якщо хочете залишити минуле):")
-        elif config_controller.list_user_action[user_id+chat_id].get('subscribe_edit_id', False):
-            data_list = config_controller.list_user_action[user_id+chat_id]['list']
-            if text != ".":
-                data_list.append(text)
-            else:
-                data_list.append(config_controller.LIST_SUBSCRIBE[config_controller.list_user_action[user_id+chat_id]['name']]['id'])
-            config_controller.list_user_action[user_id+chat_id] = {}
-            if config_controller.add_or_edit_subscribe(data_list[0], data_list[1], data_list[2]):
-                await bot.send_message(message.chat.id, "Успішно збережено!")
-            else:
-                await bot.send_message(message.chat.id, config_controller.CONTACT_HELP)
-        elif config_controller.list_user_action[user_id+chat_id].get('subscribe_add_name', False):
-            data_list = [text]
-            config_controller.list_user_action[user_id+chat_id] = {"subscribe_add_url": True,
-                                                           'list': data_list}
-            await bot.send_message(message.chat.id, "Напишіть наступним повідомленням нове посилання:")
-        elif config_controller.list_user_action[user_id+chat_id].get('subscribe_add_url', False):
-            data_list = config_controller.list_user_action[user_id+chat_id]['list']
-            data_list.append(text)
-            config_controller.list_user_action[user_id+chat_id] = {"subscribe_add_id": True,
-                                                           'list': data_list}
-            await bot.send_message(message.chat.id, "Напишіть наступним повідомленням нове id (Його можна дізнатись переславши будь-який пост канала, наприклад у бота https://t.me/getmyid_bot):")
-        elif config_controller.list_user_action[user_id+chat_id].get('subscribe_add_id', False):
-            data_list = config_controller.list_user_action[user_id+chat_id]['list']
-            data_list.append(text)
-            config_controller.list_user_action[user_id+chat_id] = {}
-            if config_controller.add_or_edit_subscribe(data_list[0], data_list[1], data_list[2]):
-                await bot.send_message(message.chat.id, "Успішно збережено!")
-            else:
-                await bot.send_message(message.chat.id, config_controller.CONTACT_HELP)
-    except Exception as ex:
-        ex.with_traceback()
-        await bot.reply_to(message, config_controller.CONTACT_HELP)
+    await handle_message(message)
+
+@bot.message_handler(func=lambda message: True, content_types=["photo", "video"])
+async def comand(message: types.Message):
+    user_id = str(message.from_user.id)
+    user_chat_id = str(message.chat.id)
+    id_list = user_id + user_chat_id
+    if state_list.get(id_list, None) == None:
+        return
+    else:
+        state: UserState = state_list[id_list]
+        res: Response = await state.next_msg_photo_and_video(message)
+        if res != None:
+            await res.send(user_chat_id, bot)
+            if res.is_end:
+                state_list.pop(id_list)
+        else:
+            state_list.pop(id_list)
+
+async def get_list_unsubscribe(user_id):
+    res_list = []
+    for i in config_controller.LIST_SUBSCRIBE:
+        try:
+            res = await bot.get_chat_member(chat_id=int(config_controller.LIST_SUBSCRIBE[i]['id']), user_id=int(user_id))
+            if res.status == "left":
+                res_list.append(config_controller.LIST_SUBSCRIBE[i]['id'])
+        except Exception as ex:
+            print(ex)
+    return res_list
 
 async def is_subscribe(chat_id):
+    global list_user_cheked, list_user_left, list_user_unsubscribe
     try:
         if chat_id in config_controller.list_is_loggin_admins or chat_id in config_controller.list_is_loggin_moders:
             return True
+        if not(chat_id in list_user_cheked):
+            if not db.is_created_user(user_tg_id=chat_id):
+                db.create_user(user_tg_id=chat_id, user_name="None")
+            list_user_cheked.append(chat_id)
         for i in config_controller.LIST_SUBSCRIBE:
             res = await bot.get_chat_member(chat_id=int(config_controller.LIST_SUBSCRIBE[i]['id']), user_id=int(chat_id))
             if res.status == "left":
+                list_user_left.append(chat_id)
+                list_user_unsubscribe[str(chat_id)] = await get_list_unsubscribe(chat_id)
                 return False
+        if chat_id in list_user_left:
+            if not db.is_created_user(user_tg_id=chat_id):
+                db.create_user(user_tg_id=chat_id, user_name="None")
+            for i in list_user_unsubscribe[str(chat_id)]:
+                db.add_user_event_by_tg_id(user_tg_id=chat_id, event_name="joinFromNeed_"+str(i))
+            list_user_left.remove(chat_id)
+            list_user_unsubscribe.pop(str(chat_id))
         return True
     except Exception as ex:
         print("error")
         return True
+
+
+async def handle_message(message: types.Message):
+    user_id = str(message.from_user.id)
+    user_chat_id = str(message.chat.id)
+    id_list = user_id+user_chat_id
+    text = message.text
+    print(text, user_id, state_list.get(id_list, None))
+    if state_list.get(id_list, None) == None:
+        builder = BuilderState(bot)
+        state = builder.create_state(text, user_id, user_chat_id, bot)
+        state_list[id_list] = state
+        res: Response = await state.start_msg()
+        if res != None:
+            await res.send(user_chat_id, bot)
+            if res.is_end:
+                state_list.pop(id_list)
+        else:
+            state_list.pop(id_list)
+    else:
+        state: UserState = state_list[id_list]
+        res: Response = await state.next_msg(text)
+        if res != None:
+            await res.send(user_chat_id, bot)
+            if res.is_end:
+                state_list.pop(id_list)
+        else:
+            state_list.pop(id_list)
+
 
 
 config_controller.preload_config()

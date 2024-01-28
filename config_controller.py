@@ -10,6 +10,13 @@ CONTACT_HELP = "Нажаль виникла помилка"
 PASSWORD_ADMIN = "admin"
 PASSWORD_MODER = "moder"
 
+LIST_POSTS = {}
+# {"name":{"text": str,
+#          "urls": [str],
+#          "photos": [str],
+#           "videos": [str]
+#          }}
+
 LIST_SUBSCRIBE = {"Канал 1": {"url": "https://t.me/forexcrypta",
                               "id": "-1001759220899"}}
 
@@ -33,11 +40,12 @@ def write_ini():
     config["PASSWORD_ADMIN"] = PASSWORD_ADMIN
     config["PASSWORD_MODER"] = PASSWORD_MODER
     config["LIST_SUBSCRIBE"] = LIST_SUBSCRIBE
+    config["LIST_POSTS"] = LIST_POSTS
     with open('config.bin', 'wb') as configfile:
         pickle.dump(config, configfile)
 
 def read_ini():
-    global TEXT_HELLO, TEXT_HELP, TEXT_AFTER_VIDEO, CONTACT_HELP, PASSWORD_ADMIN, PASSWORD_MODER, LIST_SUBSCRIBE
+    global TEXT_HELLO, TEXT_HELP, TEXT_AFTER_VIDEO, CONTACT_HELP, PASSWORD_ADMIN, PASSWORD_MODER, LIST_SUBSCRIBE, LIST_POSTS
     with open('config.bin', 'rb') as configfile:
         config = pickle.load(configfile)
         TEXT_HELLO = str(config["TEXT_HELLO"])
@@ -47,6 +55,54 @@ def read_ini():
         PASSWORD_ADMIN = str(config["PASSWORD_ADMIN"])
         PASSWORD_MODER = str(config["PASSWORD_MODER"])
         LIST_SUBSCRIBE = config.get("LIST_SUBSCRIBE", LIST_SUBSCRIBE)
+        LIST_POSTS = config.get("LIST_POSTS", LIST_POSTS)
+
+
+def del_post(key):
+    global LIST_POSTS
+    if LIST_POSTS.get(key, None) != None:
+        for i in LIST_POSTS[key]['photos']:
+            os.remove(i)
+        for i in LIST_POSTS[key]['videos']:
+            os.remove(i)
+        LIST_POSTS.__delitem__(key)
+        write_ini()
+        return True
+    else:
+        return False
+
+def is_id_post(id:int):
+    for i in LIST_POSTS:
+        if LIST_POSTS[i]['id'] == id:
+            return False
+    return True
+
+def get_id_post():
+    id = 0
+    while(not is_id_post(id)):
+        id+=1
+    return id
+
+
+def add_or_edit_post(key: str, text: str = None, urls: list[str] = None, photos: list[str] = None, videos: list[str] = None):
+    global LIST_POSTS
+    try:
+        v_key = key
+        v_text = text
+        v_urls = urls
+        v_photos = photos
+        v_videos = videos
+        id = get_id_post()
+        LIST_POSTS[v_key] = {'text': v_text,
+                                 'urls': v_urls,
+                             'photos': v_photos,
+                             'videos': v_videos,
+                             'id': id}
+        write_ini()
+        return True
+    except Exception as ex:
+        print(ex)
+        return False
 
 def log(chat_id, password):
     global list_is_loggin_admins, list_is_loggin_moders
