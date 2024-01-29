@@ -17,7 +17,7 @@ LIST_POSTS = {}
 #           "videos": [str]
 #          }}
 
-LIST_SUBSCRIBE = {"Канал 1": {"url": "https://t.me/forexcrypta",
+LIST_SUBSCRIBE = {"LIFE NEEDS MOVEMENT": {"url": "https://t.me/forexcrypta",
                               "id": "-1001759220899"}}
 
 list_is_loggin_admins = []
@@ -36,8 +36,7 @@ def preload_config():
     if os.path.exists("config.bin"):
         read_ini()
     else:
-        #write_ini()
-        sys.exit()
+        write_ini()
 def write_ini():
     config = {}
     config["TEXT_HELLO"] = TEXT_HELLO
