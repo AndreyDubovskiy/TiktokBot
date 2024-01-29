@@ -77,6 +77,10 @@ def generate_markup_menu():
     markup.add(types.InlineKeyboardButton(text="Змінити текст при помилках", callback_data="/textcontact"))
     markup.add(types.InlineKeyboardButton(text="Список підписок", callback_data="/listsubscribe"))
     markup.add(types.InlineKeyboardButton(text="Список постів", callback_data="/postlist"))
+    if config_controller.IS_SEND_AFTERVIDEO:
+        markup.add(types.InlineKeyboardButton(text="Текст після відео: вкл", callback_data="/boolafter"))
+    else:
+        markup.add(types.InlineKeyboardButton(text="Текст після відео: викл", callback_data="/boolafter"))
     return markup
 
 def generate_markup_day_month_year():

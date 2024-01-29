@@ -15,6 +15,7 @@ from Services.forChat.MenuState import MenuState
 from Services.forChat.ListSubscribeState import ListSubscribeState
 from Services.forChat.PostState import PostState
 from Services.forChat.GeturlState import GeturlState
+from Services.forChat.BoolafterState import BoolafterState
 
 class BuilderState:
     def __init__(self, bot: AsyncTeleBot):
@@ -35,6 +36,7 @@ class BuilderState:
             "/menu": MenuState,
             "/listsubscribe": ListSubscribeState,
             "/postlist": PostState,
-            "/geturl": GeturlState
+            "/geturl": GeturlState,
+            "/boolafter": BoolafterState
         }
         return clssses[data_txt](user_id, user_chat_id, bot)
