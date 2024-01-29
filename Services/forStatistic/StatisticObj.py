@@ -1,7 +1,8 @@
-import matplotlib.pyplot as plt
 import db.database as db
 import datetime
 from dateutil.relativedelta import relativedelta
+from plotnine import ggplot, aes, geom_line, theme, element_text
+import pandas as pd
 
 class StatisticObj:
     def __init__(self):
@@ -14,58 +15,62 @@ class StatisticObj:
         list_event = db.get_events_by_datetime(start, end, filtr)
         count = 0
         current = start
-        while(current.date() < end.date()):
-            #print(X, "\n", Y, "\n", current)
+        while (current.date() < end.date()):
+            # print(X, "\n", Y, "\n", current)
             for i in list_event:
                 if by == "day":
                     if current.date() == i.date_event.date():
-                        count+=1
-                        total+=1
+                        count += 1
+                        total += 1
                     else:
                         X.append(str(current.date()))
                         Y.append(count)
-                        count=0
+                        count = 0
                         current = current + datetime.timedelta(days=1)
                 elif by == "month":
-                    if current.date().month == i.date_event.date().month:
-                        count+=1
+                    if current.date().month == i.date_event.date().month and current.date().year == i.date_event.date().year:
+                        count += 1
                         total += 1
                     else:
                         X.append(str(current.date()))
                         Y.append(count)
-                        count=0
+                        count = 0
                         current = current + relativedelta(months=1)
                 elif by == "year":
+                    print("Curent", current.date().year)
+                    print("EVENT", i.date_event.date().year)
                     if current.date().year == i.date_event.date().year:
-                        count+=1
+                        count += 1
                         total += 1
                     else:
                         X.append(str(current.date()))
                         Y.append(count)
-                        count=0
+                        count = 0
                         current = current + relativedelta(years=1)
-            if by == "day":
-                X.append(str(current.date()))
-                Y.append(count)
-                count = 0
-                current = current + datetime.timedelta(days=1)
-            elif by == "month":
-                X.append(str(current.date()))
-                Y.append(count)
-                count = 0
-                current = current + relativedelta(months=1)
-            elif by == "year":
-                X.append(str(current.date()))
-                Y.append(count)
-                count = 0
-                current = current + relativedelta(years=1)
-
-        X.append(str(current.date()))
-        Y.append(count)
-        plt.plot(X, Y)
-        plt.xticks(rotation=90)
-        plt.xlabel("Дата")
-        plt.ylabel("Підписки")
-        plt.title("Статистика")
-        plt.savefig("tmp_stat/"+user_id+".png")
+            if count != 0:
+                if by == "day":
+                    X.append(str(current.date()))
+                    Y.append(count)
+                    count = 0
+                    current = current + datetime.timedelta(days=1)
+                elif by == "month":
+                    X.append(str(current.date()))
+                    Y.append(count)
+                    count = 0
+                    current = current + relativedelta(months=1)
+                elif by == "year":
+                    X.append(str(current.date()))
+                    Y.append(count)
+                    count = 0
+                    current = current + relativedelta(years=1)
+        if count != 0:
+            X.append(str(current.date()))
+            Y.append(count)
+        data = pd.DataFrame({
+            'Дата': X,
+            'Підписки': Y
+        })
+        chart = ggplot(data, aes(x='Дата', y='Підписки', group=1)) + geom_line() + theme(
+            axis_text_x=element_text(angle=90))
+        chart.save("tmp_stat/"+user_id+".png", dpi=300)
         return "tmp_stat/"+user_id+".png", total

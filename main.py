@@ -9,7 +9,8 @@ from Services.forChat.BuilderState import BuilderState
 from Services.forChat.UserState import UserState
 from Services.forChat.Response import Response
 
-tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
+# tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
+tokkey = '6729587033:AAExZVf5nYVmDwa81WIWH3bz6T1uOQugLpY'
 
 bot = AsyncTeleBot(tokkey)
 
@@ -29,30 +30,37 @@ async def download(message: types.Message):
         if await is_subscribe(message.from_user.id):
             chat_id = str(message.from_user.id) + str(message.chat.id)
             msg_del = await bot.send_message(chat_id=message.chat.id, text="Відео готується, декілька секунд...")
-            downloader.down(message.text, str(chat_id)+".mp4")
+            what, this, music = downloader.down(message.text, str(chat_id))
             await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
-            with open(str(chat_id) + ".mp4", 'rb') as file:
-                await bot.send_video(chat_id=message.chat.id, video=file)
-            await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO)
-            os.remove(str(chat_id) + ".mp4")
+            if what == 'video':
+                with open(str(chat_id) + ".mp4", 'rb') as file:
+                    await bot.send_video(chat_id=message.chat.id, video=file)
+                if config_controller.IS_SEND_AFTERVIDEO:
+                    await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO)
+                os.remove(str(chat_id) + ".mp4")
+            elif what == 'photo':
+                media_group = []
+                for photo in this:
+                    if len(media_group)+1 > 10:
+                        await bot.send_media_group(chat_id=message.chat.id, media=media_group)
+                        media_group = []
+                    media_group.append(types.InputMediaPhoto(media=open(photo, 'rb')))
+                await bot.send_media_group(chat_id=message.chat.id, media=media_group)
+                with open(music, 'rb') as mus:
+                    await bot.send_audio(chat_id=message.chat.id, audio=mus)
+                if config_controller.IS_SEND_AFTERVIDEO:
+                    await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO)
+                for photo in this:
+                    os.remove(photo)
+                os.remove(music)
+            elif what == None:
+                await bot.reply_to(message, config_controller.CONTACT_HELP)
         else:
             await bot.send_message(chat_id=message.chat.id, text="Ви не підписані на канал!\nДля користування ботом підпишіться на канали:", reply_markup=markups.generate_markup_subscribe())
     except Exception as ex:
-        try:
-            await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
-            await bot.reply_to(message, config_controller.CONTACT_HELP)
-            return
-            chat_id = str(message.from_user.id) + str(message.chat.id)
-            print("Start Foto", chat_id, message.text)
-            downloader.get_video_from_foto_tiktok(message.text, chat_id)
-            await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
-            with open(str(chat_id) + ".mp4", 'rb') as file:
-                await bot.send_video(chat_id=message.chat.id, video=file)
-            os.remove(str(chat_id) + ".mp4")
-            await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO)
-        except Exception as ex:
-            await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
-            await bot.reply_to(message, config_controller.CONTACT_HELP)
+        print(ex)
+        await bot.reply_to(message, config_controller.CONTACT_HELP)
+        await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
 
 @bot.callback_query_handler(func= lambda call: True)
 async def callback(call: types.CallbackQuery):

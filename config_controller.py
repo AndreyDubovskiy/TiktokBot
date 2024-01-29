@@ -25,6 +25,13 @@ list_is_loggin_moders = []
 
 list_user_action = {}
 
+IS_SEND_AFTERVIDEO = True
+
+
+def change_sended_aftervideo():
+    global IS_SEND_AFTERVIDEO
+    IS_SEND_AFTERVIDEO = not IS_SEND_AFTERVIDEO
+
 def preload_config():
     if os.path.exists("config.bin"):
         read_ini()
@@ -41,11 +48,12 @@ def write_ini():
     config["PASSWORD_MODER"] = PASSWORD_MODER
     config["LIST_SUBSCRIBE"] = LIST_SUBSCRIBE
     config["LIST_POSTS"] = LIST_POSTS
+    config["IS_SEND_AFTERVIDEO"] = IS_SEND_AFTERVIDEO
     with open('config.bin', 'wb') as configfile:
         pickle.dump(config, configfile)
 
 def read_ini():
-    global TEXT_HELLO, TEXT_HELP, TEXT_AFTER_VIDEO, CONTACT_HELP, PASSWORD_ADMIN, PASSWORD_MODER, LIST_SUBSCRIBE, LIST_POSTS
+    global TEXT_HELLO, TEXT_HELP, TEXT_AFTER_VIDEO, CONTACT_HELP, PASSWORD_ADMIN, PASSWORD_MODER, LIST_SUBSCRIBE, LIST_POSTS, IS_SEND_AFTERVIDEO
     with open('config.bin', 'rb') as configfile:
         config = pickle.load(configfile)
         TEXT_HELLO = str(config["TEXT_HELLO"])
@@ -55,6 +63,7 @@ def read_ini():
         PASSWORD_ADMIN = str(config["PASSWORD_ADMIN"])
         PASSWORD_MODER = str(config["PASSWORD_MODER"])
         LIST_SUBSCRIBE = config.get("LIST_SUBSCRIBE", LIST_SUBSCRIBE)
+        IS_SEND_AFTERVIDEO = config.get("IS_SEND_AFTERVIDEO", IS_SEND_AFTERVIDEO)
         LIST_POSTS = config.get("LIST_POSTS", LIST_POSTS)
 
 
