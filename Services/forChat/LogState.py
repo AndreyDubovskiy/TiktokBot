@@ -17,9 +17,9 @@ class LogState(UserState):
         if self.is_login:
             res = config_controller.log(self.user_id, message)
             if res == 1:
-                return Response(text="Ви успішно залогінились як модер!", is_end=True)
+                return Response(text="Ви успішно залогінились як модер!", is_end=True, redirect="/menu")
             elif res == 2:
-                return Response(text="Ви успішно залогінились як адмін!", is_end=True)
+                return Response(text="Ви успішно залогінились як адмін!", is_end=True, redirect="/menu")
             else:
                 return Response(text="Не правильний пароль! Спробуте знову!", buttons=markups.generate_cancel())
 

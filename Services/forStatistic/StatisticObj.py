@@ -17,6 +17,8 @@ class StatisticObj:
         current = start
         while (current.date() < end.date()):
             # print(X, "\n", Y, "\n", current)
+            if len(list_event) == 0:
+                break
             for i in list_event:
                 if by == "day":
                     if current.date() == i.date_event.date():

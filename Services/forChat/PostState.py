@@ -38,9 +38,9 @@ class PostState(UserState):
             self.newurls = message.split("\n")
             self.edit = None
             if config_controller.add_or_edit_post(self.newname, text=self.newtext, urls=self.newurls, photos=self.newphotos, videos=self.newvideos):
-                return Response(text="Успішно додано!", is_end=True)
+                return Response(text="Успішно додано!", is_end=True, redirect="/postlist")
             else:
-                return Response(text="Помилка!", is_end=True)
+                return Response(text="Помилка!", is_end=True, redirect="/postlist")
         elif self.edit == "statstart":
             self.edit = "statend"
             if message.count("-") > 0:
@@ -83,19 +83,22 @@ class PostState(UserState):
                 index+=1
     async def next_btn_clk(self, data_btn: str):
         if data_btn == "/cancel":
-            return None
+            if self.current_name == None:
+                return Response(is_end=True, redirect="/menu")
+            else:
+                return Response(is_end=True, redirect="/postlist")
         elif data_btn == "/day":
             self.typestat = "day"
             await self.generate_stat()
-            return None
+            return Response(is_end=True, redirect="/postlist")
         elif data_btn == "/month":
             self.typestat = "month"
             await self.generate_stat()
-            return None
+            return Response(is_end=True, redirect="/postlist")
         elif data_btn == "/year":
             self.typestat = "year"
             await self.generate_stat()
-            return None
+            return Response(is_end=True, redirect="/postlist")
         elif data_btn == "/next":
             if len(config_controller.LIST_POSTS)-((self.current_page+1)*self.max_on_page) > 0:
                 self.current_page+=1
@@ -112,9 +115,9 @@ class PostState(UserState):
             return Response(text="Напишіть назву поста наступним повідомленням (для себе, користувачам не надсилається):", buttons=markups.generate_cancel())
         elif data_btn == "/delete":
             if config_controller.del_post(self.current_name):
-                return Response(text="Успішно видалено!", is_end=True)
+                return Response(text="Успішно видалено!", is_end=True, redirect="/postlist")
             else:
-                return Response(text="Помилка!", is_end=True)
+                return Response(text="Помилка!", is_end=True, redirect="/postlist")
         elif data_btn == "/stat":
             self.edit = "statstart"
             return Response(text="Уведіть початкову дату для статистики у фарматі дд-мм-рррр", buttons=markups.generate_cancel())
@@ -159,7 +162,7 @@ class PostState(UserState):
                     count+=1
                 except Exception as ex:
                     error+=1
-            return Response(text="Розсилка закінчена!\nРозіслано людям: "+str(count)+"\nПомилок: "+str(error), is_end=True)
+            return Response(text="Розсилка закінчена!\nРозіслано людям: "+str(count)+"\nПомилок: "+str(error), is_end=True, redirect="/postlist")
 
 
 

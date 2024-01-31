@@ -17,9 +17,9 @@ class PasswordModerState(UserState):
         if self.is_login:
             res = config_controller.change_password_moder(self.user_id, message)
             if res:
-                return Response(text="Пароль замінено!", is_end=True)
+                return Response(text="Пароль замінено!", is_end=True, redirect="/menu")
             else:
-                return Response(text="У вас недостатньо прав!", is_end=True)
+                return Response(text="У вас недостатньо прав!", is_end=True, redirect="/menu")
 
     async def next_btn_clk(self, data_btn: str):
         if data_btn == "/cancel":

@@ -69,10 +69,12 @@ def read_ini():
 def del_post(key):
     global LIST_POSTS
     if LIST_POSTS.get(key, None) != None:
-        for i in LIST_POSTS[key]['photos']:
-            os.remove(i)
-        for i in LIST_POSTS[key]['videos']:
-            os.remove(i)
+        if LIST_POSTS[key]['photos'] != None:
+            for i in LIST_POSTS[key]['photos']:
+                os.remove(i)
+        if LIST_POSTS[key]['videos'] != None:
+            for i in LIST_POSTS[key]['videos']:
+                os.remove(i)
         LIST_POSTS.__delitem__(key)
         write_ini()
         return True

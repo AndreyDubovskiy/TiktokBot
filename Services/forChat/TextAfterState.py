@@ -17,9 +17,9 @@ class TextAfterState(UserState):
         if self.is_login:
             res = config_controller.change_text_after_video(self.user_id, message)
             if res:
-                return Response(text="Ви замінили текст!", is_end=True)
+                return Response(text="Ви замінили текст!", is_end=True, redirect="/menu")
             else:
-                return Response(text="У вас недостатньо прав!", is_end=True)
+                return Response(text="У вас недостатньо прав!", is_end=True, redirect="/menu")
 
     async def next_btn_clk(self, data_btn: str):
         if data_btn == "/cancel":

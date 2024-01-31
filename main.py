@@ -9,8 +9,8 @@ from Services.forChat.BuilderState import BuilderState
 from Services.forChat.UserState import UserState
 from Services.forChat.Response import Response
 
-tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
-# tokkey = '6729587033:AAExZVf5nYVmDwa81WIWH3bz6T1uOQugLpY'
+#tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
+tokkey = '6729587033:AAExZVf5nYVmDwa81WIWH3bz6T1uOQugLpY'
 
 bot = AsyncTeleBot(tokkey)
 
@@ -78,12 +78,7 @@ async def callback(call: types.CallbackQuery):
     if state_list.get(id_list, None) != None:
         state: UserState = state_list[id_list]
         res: Response = await state.next_btn_clk(text)
-        if res != None:
-            await res.send(chat_id, bot)
-            if res.is_end:
-                state_list.pop(id_list)
-        else:
-            state_list.pop(id_list)
+        await chek_response(chat_id, user_id, id_list, res)
     else:
         builder = BuilderState(bot)
         if not text.startswith("/geturl"):
@@ -93,20 +88,10 @@ async def callback(call: types.CallbackQuery):
         state_list[id_list] = state
         if not text.startswith("/geturl"):
             res: Response = await state.start_msg()
-            if res != None:
-                await res.send(chat_id, bot)
-                if res.is_end:
-                    state_list.pop(id_list)
-            else:
-                state_list.pop(id_list)
+            await chek_response(chat_id, user_id, id_list, res)
         else:
             res: Response = await state.next_btn_clk_message(text, call.message)
-            if res != None:
-                await res.send(chat_id, bot)
-                if res.is_end:
-                    state_list.pop(id_list)
-            else:
-                state_list.pop(id_list)
+            await chek_response(chat_id, user_id, id_list, res)
     if not text.startswith("/geturl"):
         await bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.id)
 
@@ -124,12 +109,7 @@ async def comand(message: types.Message):
     else:
         state: UserState = state_list[id_list]
         res: Response = await state.next_msg_photo_and_video(message)
-        if res != None:
-            await res.send(user_chat_id, bot)
-            if res.is_end:
-                state_list.pop(id_list)
-        else:
-            state_list.pop(id_list)
+        await chek_response(user_chat_id, user_id, id_list, res)
 
 async def get_list_unsubscribe(user_id):
     res_list = []
@@ -169,7 +149,19 @@ async def is_subscribe(chat_id):
         print("error")
         return True
 
-
+async def chek_response(user_chat_id, user_id, id_list, res: Response = None):
+    if res != None:
+        await res.send(user_chat_id, bot)
+        if res.is_end:
+            state_list.pop(id_list)
+        if res.redirect != None:
+            builder = BuilderState(bot)
+            state = builder.create_state(res.redirect, user_id, user_chat_id, bot)
+            state_list[id_list] = state
+            res: Response = await state.start_msg()
+            await chek_response(user_chat_id, user_id, id_list, res)
+    else:
+        state_list.pop(id_list)
 async def handle_message(message: types.Message):
     user_id = str(message.from_user.id)
     user_chat_id = str(message.chat.id)
@@ -181,21 +173,11 @@ async def handle_message(message: types.Message):
         state = builder.create_state(text, user_id, user_chat_id, bot)
         state_list[id_list] = state
         res: Response = await state.start_msg()
-        if res != None:
-            await res.send(user_chat_id, bot)
-            if res.is_end:
-                state_list.pop(id_list)
-        else:
-            state_list.pop(id_list)
+        await chek_response(user_chat_id, user_id, id_list, res)
     else:
         state: UserState = state_list[id_list]
         res: Response = await state.next_msg(text)
-        if res != None:
-            await res.send(user_chat_id, bot)
-            if res.is_end:
-                state_list.pop(id_list)
-        else:
-            state_list.pop(id_list)
+        await chek_response(user_chat_id, user_id, id_list, res)
 
 
 

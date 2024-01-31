@@ -38,9 +38,9 @@ class ListSubscribeState(UserState):
                 self.newid = message
             self.edit = None
             if config_controller.add_or_edit_subscribe(self.name_suscribe, self.newlink, self.newid):
-                return Response(text="Успішно збережено!", is_end=True)
+                return Response(text="Успішно збережено!", is_end=True, redirect="/listsubscribe")
             else:
-                return Response(text="Помилка!", is_end=True)
+                return Response(text="Помилка!", is_end=True, redirect="/listsubscribe")
         elif self.edit == "newname":
             self.newname = message
             self.edit = "newlink"
@@ -53,9 +53,9 @@ class ListSubscribeState(UserState):
             self.newid = message
             self.edit = None
             if config_controller.add_or_edit_subscribe(self.newname, self.newlink, self.newid):
-                return Response(text="Успішно!", is_end=True)
+                return Response(text="Успішно!", is_end=True, redirect="/listsubscribe")
             else:
-                return Response(text="Помилка!", is_end=True)
+                return Response(text="Помилка!", is_end=True, redirect="/listsubscribe")
         elif self.edit == "statstart":
             self.edit = "statend"
             if message.count("-") > 0:
@@ -89,7 +89,10 @@ class ListSubscribeState(UserState):
 
     async def next_btn_clk(self, data_btn: str):
         if data_btn == "/cancel":
-            return None
+            if self.is_list:
+                return Response(is_end=True, redirect="/listsubscribe")
+            else:
+                return Response(is_end=True, redirect="/menu")
         if self.is_list:
             if data_btn == "/edit" and self.name_suscribe != None:
                 self.edit = "link"
@@ -97,24 +100,24 @@ class ListSubscribeState(UserState):
             elif data_btn == "/day":
                 self.typestat = "day"
                 await self.generate_stat()
-                return None
+                return Response(is_end=True, redirect="/listsubscribe")
             elif data_btn == "/month":
                 self.typestat = "month"
                 await self.generate_stat()
-                return None
+                return Response(is_end=True, redirect="/listsubscribe")
             elif data_btn == "/year":
                 self.typestat = "year"
                 await self.generate_stat()
-                return None
+                return Response(is_end=True, redirect="/listsubscribe")
             elif data_btn == "/stat":
                 self.edit = "statstart"
                 return Response(text="Уведіть початкову дату для статистики у фарматі дд-мм-рррр",
                                 buttons=markups.generate_cancel())
             elif data_btn == "/delete" and self.name_suscribe != None:
                 if config_controller.del_subscribe(self.name_suscribe):
-                    return Response(text="Успішно видалено!", is_end=True)
+                    return Response(text="Успішно видалено!", is_end=True, redirect="/listsubscribe")
                 else:
-                    return Response(text="Помилка!", is_end=True)
+                    return Response(text="Помилка!", is_end=True, redirect="/listsubscribe")
             elif data_btn == "/add":
                 self.edit = "newname"
                 return Response(text="Напишіть наступним повідомленням нову назву:", buttons=markups.generate_cancel())
