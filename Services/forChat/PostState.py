@@ -109,7 +109,12 @@ class PostState(UserState):
             return Response(text="Список постів", buttons=markups.generate_post_menu(self.current_page*self.max_on_page, self.max_on_page))
         elif data_btn in config_controller.LIST_POSTS:
             self.current_name = data_btn
-            return Response(text="Назва поста: " + self.current_name + "\nТекст поста:\n"+config_controller.LIST_POSTS[self.current_name]['text'], buttons=markups.generate_post_semimenu())
+            text = ""
+            if config_controller.LIST_POSTS[self.current_name]['photos']:
+                text+= "\nКількість прикріплених фото: " + str(len(config_controller.LIST_POSTS[self.current_name]['photos'])) + "\n"
+            if config_controller.LIST_POSTS[self.current_name]['videos']:
+                text+= "\nКількість прикріплених відео: " + str(len(config_controller.LIST_POSTS[self.current_name]['videos'])) + "\n"
+            return Response(text="Назва поста: " + self.current_name + text + "\nТекст поста:\n"+config_controller.LIST_POSTS[self.current_name]['text'], buttons=markups.generate_post_semimenu())
         elif data_btn == "/add":
             self.edit = "addname"
             return Response(text="Напишіть назву поста наступним повідомленням (для себе, користувачам не надсилається):", buttons=markups.generate_cancel())
