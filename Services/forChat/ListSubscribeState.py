@@ -89,7 +89,7 @@ class ListSubscribeState(UserState):
 
     async def next_btn_clk(self, data_btn: str):
         if data_btn == "/cancel":
-            if self.is_list:
+            if self.name_suscribe != None:
                 return Response(is_end=True, redirect="/listsubscribe")
             else:
                 return Response(is_end=True, redirect="/menu")
