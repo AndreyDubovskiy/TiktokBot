@@ -71,10 +71,16 @@ def del_post(key):
     if LIST_POSTS.get(key, None) != None:
         if LIST_POSTS[key]['photos'] != None:
             for i in LIST_POSTS[key]['photos']:
-                os.remove(i)
+                try:
+                    os.remove(i)
+                except Exception as ex:
+                    pass
         if LIST_POSTS[key]['videos'] != None:
             for i in LIST_POSTS[key]['videos']:
-                os.remove(i)
+                try:
+                    os.remove(i)
+                except Exception as ex:
+                    pass
         LIST_POSTS.__delitem__(key)
         write_ini()
         return True

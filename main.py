@@ -68,7 +68,6 @@ async def callback(call: types.CallbackQuery):
     chat_id = str(call.message.chat.id)
     text = call.data
     id_list = user_id+chat_id
-    print(text, user_id, state_list.get(id_list, None))
     if call.data == '/check':
         if await is_subscribe(str(call.from_user.id)):
             await bot.send_message(call.message.chat.id, "Ви підписались! Тепер можете користуватись ботом")
@@ -167,7 +166,6 @@ async def handle_message(message: types.Message):
     user_chat_id = str(message.chat.id)
     id_list = user_id+user_chat_id
     text = message.text
-    print(text, user_id, state_list.get(id_list, None))
     if state_list.get(id_list, None) == None:
         builder = BuilderState(bot)
         state = builder.create_state(text, user_id, user_chat_id, bot)
