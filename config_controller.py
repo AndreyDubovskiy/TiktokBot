@@ -62,6 +62,9 @@ def read_ini():
         PASSWORD_ADMIN = str(config["PASSWORD_ADMIN"])
         PASSWORD_MODER = str(config["PASSWORD_MODER"])
         LIST_SUBSCRIBE = config.get("LIST_SUBSCRIBE", LIST_SUBSCRIBE)
+        for i in LIST_SUBSCRIBE:
+            if LIST_SUBSCRIBE[i].get('request', None) == None:
+                LIST_SUBSCRIBE[i]['request'] = ['1']
         IS_SEND_AFTERVIDEO = config.get("IS_SEND_AFTERVIDEO", IS_SEND_AFTERVIDEO)
         LIST_POSTS = config.get("LIST_POSTS", LIST_POSTS)
 
@@ -203,7 +206,8 @@ def add_or_edit_subscribe(key, tg_link, tg_id):
             v_tg_id = tg_id
             v_tg_link = str(tg_link)
             LIST_SUBSCRIBE[v_key] = {'url': v_tg_link,
-                                     'id': v_tg_id}
+                                     'id': v_tg_id,
+                                     'request': ['1']}
             write_ini()
             return True
         else:
@@ -213,3 +217,15 @@ def add_or_edit_subscribe(key, tg_link, tg_id):
 
 def get_size_subscribe():
     return len(LIST_SUBSCRIBE)
+
+def get_list_id_subscribe():
+    tmp = []
+    for i in LIST_SUBSCRIBE:
+        tmp.append(LIST_SUBSCRIBE[i]['id'])
+    return tmp
+
+def get_name_by_id_subscribe(id):
+    for i in LIST_SUBSCRIBE:
+        if LIST_SUBSCRIBE[i]['id'] == id:
+            return i
+    return None

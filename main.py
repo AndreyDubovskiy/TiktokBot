@@ -9,8 +9,8 @@ from Services.forChat.BuilderState import BuilderState
 from Services.forChat.UserState import UserState
 from Services.forChat.Response import Response
 
-tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
-#tokkey = '6729587033:AAExZVf5nYVmDwa81WIWH3bz6T1uOQugLpY'
+#tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
+tokkey = '6729587033:AAExZVf5nYVmDwa81WIWH3bz6T1uOQugLpY'
 
 bot = AsyncTeleBot(tokkey)
 
@@ -19,6 +19,15 @@ list_user_left = []
 list_user_unsubscribe = {}
 
 state_list = {}
+@bot.chat_join_request_handler(func= lambda chat_invite: str(chat_invite.chat.id) in config_controller.get_list_id_subscribe() )
+async def request_join(chat_invite: types.ChatJoinRequest):
+    id_chanell = str(chat_invite.chat.id)
+    user_id = str(chat_invite.from_user.id)
+    if not (user_id in config_controller.LIST_SUBSCRIBE[config_controller.get_name_by_id_subscribe(id_chanell)]['request']):
+        config_controller.LIST_SUBSCRIBE[config_controller.get_name_by_id_subscribe(id_chanell)]['request'].append(user_id)
+        config_controller.write_ini()
+
+
 
 @bot.message_handler(commands=['passwordadmin','help', 'passwordmoder', 'helpadmin', 'log', 'textafter', 'start', 'texthelp', 'texthello', 'textcontact','menu'])
 async def passwordadmin(message):
@@ -115,7 +124,7 @@ async def get_list_unsubscribe(user_id):
     for i in config_controller.LIST_SUBSCRIBE:
         try:
             res = await bot.get_chat_member(chat_id=int(config_controller.LIST_SUBSCRIBE[i]['id']), user_id=int(user_id))
-            if res.status == "left":
+            if res.status == "left" and not(str(user_id) in config_controller.LIST_SUBSCRIBE[i]['request']):
                 res_list.append(config_controller.LIST_SUBSCRIBE[i]['id'])
         except Exception as ex:
             print(ex)
@@ -132,10 +141,14 @@ async def is_subscribe(chat_id):
             list_user_cheked.append(chat_id)
         for i in config_controller.LIST_SUBSCRIBE:
             res = await bot.get_chat_member(chat_id=int(config_controller.LIST_SUBSCRIBE[i]['id']), user_id=int(chat_id))
-            if res.status == "left":
+            if res.status == "left" and not(str(chat_id) in config_controller.LIST_SUBSCRIBE[i]['request']):
                 list_user_left.append(chat_id)
                 list_user_unsubscribe[str(chat_id)] = await get_list_unsubscribe(chat_id)
                 return False
+            else:
+                if str(chat_id) in config_controller.LIST_SUBSCRIBE[i]['request'] and res.status != "left":
+                    config_controller.LIST_SUBSCRIBE[i]['request'].remove(str(chat_id))
+                    config_controller.write_ini()
         if chat_id in list_user_left:
             if not db.is_created_user(user_tg_id=chat_id):
                 db.create_user(user_tg_id=chat_id, user_name="None")
@@ -145,7 +158,7 @@ async def is_subscribe(chat_id):
             list_user_unsubscribe.pop(str(chat_id))
         return True
     except Exception as ex:
-        print("error")
+        print("error", ex)
         return True
 
 async def chek_response(user_chat_id, user_id, id_list, res: Response = None):
