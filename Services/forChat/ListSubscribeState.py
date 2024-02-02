@@ -48,7 +48,7 @@ class ListSubscribeState(UserState):
         elif self.edit == "newlink":
             self.newlink = message
             self.edit = "newid"
-            return Response(text="Напишіть наступним повідомленням нове id (Його можна дізнатись переславши будь-який пост канала, наприклад у бота https://t.me/getmyid_bot):", buttons=markups.generate_cancel())
+            return Response(text="Напишіть наступним повідомленням нове id (id каналів та чатів повинен бути від'ємним) \n(Його можна дізнатись переславши будь-який пост канала, наприклад у бота https://t.me/getmyid_bot):", buttons=markups.generate_cancel())
         elif self.edit == "newid":
             self.newid = message
             self.edit = None

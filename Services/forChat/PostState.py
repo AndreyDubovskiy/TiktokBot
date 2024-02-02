@@ -22,9 +22,14 @@ class PostState(UserState):
         self.newvideos = None
         self.newtext = None
     async def start_msg(self):
-        return Response(text="Список постів", buttons=markups.generate_post_menu(self.current_page, self.max_on_page))
+        if self.user_id in config_controller.list_is_loggin_admins or self.user_id in config_controller.list_is_loggin_moders:
+            return Response(text="Список постів", buttons=markups.generate_post_menu(self.current_page, self.max_on_page))
+        else:
+            return Response(text="У вас недостатньо прав!", is_end=True)
 
     async def next_msg(self, message: str):
+        if not (self.user_id in config_controller.list_is_loggin_admins or self.user_id in config_controller.list_is_loggin_moders):
+            return Response(text="У вас недостатньо прав!", is_end=True)
         if self.edit == "addname":
             self.newname = message
             self.edit = "addpost"
