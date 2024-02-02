@@ -5,6 +5,6 @@ RUN pip install --no-cache-dir matplotlib pandas
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN pip install ffmpeg-python
-RUN mkdir /tmp_stat
-RUN mkdir /post_tmp
+RUN mkdir /app/tmp_stat
+RUN mkdir /app/post_tmp
 CMD ["python", "main.py"]
