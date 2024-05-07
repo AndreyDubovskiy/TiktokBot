@@ -8,8 +8,10 @@ import db.database as db
 from Services.forChat.BuilderState import BuilderState
 from Services.forChat.UserState import UserState
 from Services.forChat.Response import Response
+import Services.Logger as log
 
 tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
+#tokkey = '6729587033:AAExZVf5nYVmDwa81WIWH3bz6T1uOQugLpY'
 
 bot = AsyncTeleBot(tokkey)
 
@@ -18,6 +20,11 @@ list_user_left = []
 list_user_unsubscribe = {}
 
 state_list = {}
+
+@bot.message_handler(commands=['get_log'])
+async def off(message):
+    with open(log.get_log(), 'rb') as file:
+        await bot.send_document(chat_id=message.chat.id, document=file)
 @bot.chat_join_request_handler(func= lambda chat_invite: str(chat_invite.chat.id) in config_controller.get_list_id_subscribe() )
 async def request_join(chat_invite: types.ChatJoinRequest):
     id_chanell = str(chat_invite.chat.id)
@@ -38,10 +45,13 @@ async def download(message: types.Message):
         if await is_subscribe(message.from_user.id):
             chat_id = str(message.from_user.id) + str(message.chat.id)
             msg_del = await bot.send_message(chat_id=message.chat.id, text="Відео готується, декілька секунд...")
+            print("Start DOWNLOAD")
             what, this, music = downloader.down(message.text, str(chat_id))
+            print("END DOWNLOAD", what, this, music)
             await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
             if what == 'video':
                 with open(str(chat_id) + ".mp4", 'rb') as file:
+                    print("try send ", message.chat.id)
                     await bot.send_video(chat_id=message.chat.id, video=file)
                 if config_controller.IS_SEND_AFTERVIDEO:
                     await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO)

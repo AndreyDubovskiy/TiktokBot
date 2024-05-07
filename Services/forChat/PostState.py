@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 
 from Services.forChat.UserState import UserState
@@ -8,6 +9,7 @@ from Services.forStatistic.StatisticObj import StatisticObj
 import markups
 import config_controller
 import db.database as db
+import Services.Logger as log
 
 class PostState(UserState):
     def __init__(self, user_id: str, user_chat_id: str, bot: AsyncTeleBot):
@@ -135,47 +137,60 @@ class PostState(UserState):
             self.edit = "statstart"
             return Response(text="Уведіть початкову дату для статистики у фарматі дд-мм-рррр", buttons=markups.generate_cancel())
         elif data_btn == "/send":
-            list_users = db.get_all_users()
-            count = 0
-            error = 0
-            await self.bot.send_message(chat_id=self.user_id, text="Розсилка розпочата, очікуйте повідомлення про закінчення")
-            for user in list_users:
-                try:
-                    chat_id = user.tg_id
-                    text_post = config_controller.LIST_POSTS[self.current_name]['text']
-                    list_photos = config_controller.LIST_POSTS[self.current_name]['photos']
-                    list_videos = config_controller.LIST_POSTS[self.current_name]['videos']
-                    list_urls = config_controller.LIST_POSTS[self.current_name]['urls']
-                    markup_tpm = types.InlineKeyboardMarkup(row_width=2)
-                    current_url = 0
-                    for i in list_urls:
-                        markup_tpm.add(types.InlineKeyboardButton(text="Перейти за посиланням", callback_data="/geturl_"+self.current_name+"_"+str(current_url)))
-                        current_url+=1
-                    if list_photos and len(list_photos) == 1 and text_post:
-                        with open(list_photos[0], 'rb') as photo_file:
-                            await self.bot.send_photo(chat_id=chat_id, photo=photo_file, caption=text_post, reply_markup=markup_tpm)
-                    elif list_photos and len(list_photos) == 1:
-                        with open(list_photos[0], 'rb') as photo_file:
-                            await self.bot.send_photo(chat_id=chat_id, photo=photo_file, reply_markup=markup_tpm)
-                    elif list_photos and len(list_photos) > 1 and text_post:
-                        media = []
-                        for i in list_photos:
-                            with open(i, 'rb') as photo_file:
-                                media.append(types.InputMediaPhoto(media=photo_file))
-                        await self.bot.send_media_group(chat_id=chat_id, media=media)
-                        await self.bot.send_message(chat_id=chat_id, text=text_post, reply_markup=markup_tpm)
-                    elif list_videos and len(list_videos) == 1 and text_post:
-                        with open(list_videos[0], 'rb') as video_file:
-                            await self.bot.send_video(chat_id=chat_id, video=photo_file, caption=text_post, reply_markup=markup_tpm)
-                    elif list_videos and len(list_videos) == 1:
-                        with open(list_videos[0], 'rb') as video_file:
-                            await self.bot.send_video(chat_id=chat_id, video=photo_file, reply_markup=markup_tpm)
-                    elif text_post:
-                        await self.bot.send_message(chat_id=chat_id, text=text_post, reply_markup=markup_tpm)
-                    count+=1
-                except Exception as ex:
-                    error+=1
-            return Response(text="Розсилка закінчена!\nРозіслано людям: "+str(count)+"\nПомилок: "+str(error), is_end=True, redirect="/postlist")
+            try:
+                list_users = db.get_all_users()
+                count = 0
+                error = 0
+                len_users = len(list_users)
+                SLEEP_AFTER_SEC = 10
+                MAX_COUNT = 50
+                await self.bot.send_message(chat_id=self.user_id, text="Розсилка розпочата, очікуйте повідомлення про закінчення")
+                info_msg = await self.bot.send_message(chat_id=self.user_id, text="[Статус розсилки]\nРозіслано людям: "+str(count) + " з "+str(len_users-error) +"\nПомилок: "+str(error))
+                for user in list_users:
+                    if count % MAX_COUNT == 0 and count != 0:
+                        await self.bot.edit_message_text(chat_id=self.user_id, message_id=info_msg.message_id, text="[Статус розсилки]\nРозіслано людям: "+str(count) + " з "+str(len_users-error) +"\nПомилок: "+str(error))
+                        await asyncio.sleep(SLEEP_AFTER_SEC)
+                    try:
+                        chat_id = user.tg_id
+                        text_post = config_controller.LIST_POSTS[self.current_name]['text']
+                        list_photos = config_controller.LIST_POSTS[self.current_name]['photos']
+                        list_videos = config_controller.LIST_POSTS[self.current_name]['videos']
+                        list_urls = config_controller.LIST_POSTS[self.current_name]['urls']
+                        markup_tpm = types.InlineKeyboardMarkup(row_width=2)
+                        current_url = 0
+                        for i in list_urls:
+                            markup_tpm.add(types.InlineKeyboardButton(text="Перейти за посиланням", callback_data="/geturl_"+self.current_name+"_"+str(current_url)))
+                            current_url+=1
+                        if list_photos and len(list_photos) == 1 and text_post:
+                            with open(list_photos[0], 'rb') as photo_file:
+                                await self.bot.send_photo(chat_id=chat_id, photo=photo_file, caption=text_post, reply_markup=markup_tpm)
+                        elif list_photos and len(list_photos) == 1:
+                            with open(list_photos[0], 'rb') as photo_file:
+                                await self.bot.send_photo(chat_id=chat_id, photo=photo_file, reply_markup=markup_tpm)
+                        elif list_photos and len(list_photos) > 1 and text_post:
+                            media = []
+                            for i in list_photos:
+                                with open(i, 'rb') as photo_file:
+                                    media.append(types.InputMediaPhoto(media=photo_file))
+                            await self.bot.send_media_group(chat_id=chat_id, media=media)
+                            await self.bot.send_message(chat_id=chat_id, text=text_post, reply_markup=markup_tpm)
+                        elif list_videos and len(list_videos) == 1 and text_post:
+                            with open(list_videos[0], 'rb') as video_file:
+                                await self.bot.send_video(chat_id=chat_id, video=video_file, caption=text_post, reply_markup=markup_tpm)
+                        elif list_videos and len(list_videos) == 1:
+                            with open(list_videos[0], 'rb') as video_file:
+                                await self.bot.send_video(chat_id=chat_id, video=video_file, reply_markup=markup_tpm)
+                        elif text_post:
+                            await self.bot.send_message(chat_id=chat_id, text=text_post, reply_markup=markup_tpm)
+                        count+=1
+                    except Exception as ex:
+                        error+=1
+                        log.add_log(ex)
+                await self.bot.delete_message(chat_id=self.user_id, message_id=info_msg.message_id)
+                return Response(text="Розсилка закінчена!\nРозіслано людям: "+str(count)+"\nПомилок: "+str(error), is_end=True, redirect="/postlist")
+            except Exception as ex:
+                log.add_log("FATAL ERROR - "+str(ex))
+                return Response(text="Помилка!", is_end=True, redirect="/postlist")
 
 
 
