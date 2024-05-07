@@ -87,5 +87,3 @@ def get_foto_or_video_tiktok(url, filename):
             return "photo", imgs_paths, filename+".mp3"
     except Exception as ex:
         return None, None, None
-
-
