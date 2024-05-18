@@ -29,14 +29,19 @@ async def off(message):
 @bot.message_handler(commands=['log'])
 async def off(message):
     tmp = ""
-    for i in range(1, 15):
-        tmp += log.LOGGER_LIST[-i]+"\n"
-    await bot.send_message(chat_id=message.chat.id, text=tmp)
+    if len(log.LOGGER_LIST) < 15:
+        for i in range(0, len(log.LOGGER_LIST)):
+            tmp += log.LOGGER_LIST[i]+"\n"
+        await bot.send_message(chat_id=message.chat.id, text=tmp)
+    else:
+        for i in range(15, 1):
+            tmp += log.LOGGER_LIST[-i]+"\n"
+        await bot.send_message(chat_id=message.chat.id, text=tmp)
 
 @bot.message_handler(commands=['log1'])
 async def off(message):
     tmp = ""
-    for i in range(16, 31):
+    for i in range(31, 16):
         tmp += log.LOGGER_LIST[-i]+"\n"
     await bot.send_message(chat_id=message.chat.id, text=tmp)
 
