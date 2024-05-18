@@ -25,6 +25,21 @@ state_list = {}
 async def off(message):
     with open(log.get_log(), 'rb') as file:
         await bot.send_document(chat_id=message.chat.id, document=file)
+
+@bot.message_handler(commands=['log'])
+async def off(message):
+    tmp = ""
+    for i in range(1, 15):
+        tmp += log.LOGGER_LIST[-i]+"\n"
+    await bot.send_message(chat_id=message.chat.id, text=tmp)
+
+@bot.message_handler(commands=['log1'])
+async def off(message):
+    tmp = ""
+    for i in range(16, 31):
+        tmp += log.LOGGER_LIST[-i]+"\n"
+    await bot.send_message(chat_id=message.chat.id, text=tmp)
+
 @bot.chat_join_request_handler(func= lambda chat_invite: str(chat_invite.chat.id) in config_controller.get_list_id_subscribe() )
 async def request_join(chat_invite: types.ChatJoinRequest):
     id_chanell = str(chat_invite.chat.id)
@@ -46,7 +61,7 @@ async def download(message: types.Message):
             chat_id = str(message.from_user.id) + str(message.chat.id)
             msg_del = await bot.send_message(chat_id=message.chat.id, text="Відео готується, декілька секунд...")
             print("Start DOWNLOAD")
-            what, this, music = downloader.down(message.text, str(chat_id))
+            what, this, music = await downloader.down_async(message.text, str(chat_id))
             print("END DOWNLOAD", what, this, music)
             await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
             if what == 'video':

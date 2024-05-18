@@ -1,5 +1,9 @@
 import requests as req
 import shutil
+import asyncio
+
+async def down_async(url, outfile):
+    return await asyncio.to_thread(down, url, outfile)
 
 def down(url, outfile):
     try:
