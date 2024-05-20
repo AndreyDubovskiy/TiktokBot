@@ -28,6 +28,8 @@ list_user_action = {}
 IS_SEND_AFTERVIDEO = True
 
 
+
+
 def change_sended_aftervideo():
     global IS_SEND_AFTERVIDEO
     IS_SEND_AFTERVIDEO = not IS_SEND_AFTERVIDEO

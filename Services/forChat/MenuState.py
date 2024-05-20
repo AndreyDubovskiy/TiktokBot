@@ -8,3 +8,4 @@ import config_controller
 class MenuState(UserState):
     async def start_msg(self):
         return Response(text="Меню для адмінів та модераторів", buttons=markups.generate_markup_menu(), is_end=True)
+

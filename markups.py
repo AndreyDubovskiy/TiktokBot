@@ -39,6 +39,7 @@ def generate_post_semimenu():
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(types.InlineKeyboardButton(text="Видалити", callback_data="/delete"))
     markup.add(types.InlineKeyboardButton(text="Розіслати", callback_data="/send"))
+    markup.add(types.InlineKeyboardButton(text="Запланувати розсилку", callback_data="/tasksend"))
     markup.add(types.InlineKeyboardButton(text="Статистика", callback_data="/stat"))
     markup.add(types.InlineKeyboardButton(text="Відмінити", callback_data="/cancel"))
     return markup
@@ -77,6 +78,8 @@ def generate_markup_menu():
     markup.add(types.InlineKeyboardButton(text="Змінити текст при помилках", callback_data="/textcontact"))
     markup.add(types.InlineKeyboardButton(text="Список підписок", callback_data="/listsubscribe"))
     markup.add(types.InlineKeyboardButton(text="Список постів", callback_data="/postlist"))
+    markup.add(types.InlineKeyboardButton(text="Список планів розсилки", callback_data="/tasks"))
+    markup.add(types.InlineKeyboardButton(text="Очистити список планів розсилки", callback_data="/tasksclear"))
     if config_controller.IS_SEND_AFTERVIDEO:
         markup.add(types.InlineKeyboardButton(text="Текст після відео: вкл", callback_data="/boolafter"))
     else:

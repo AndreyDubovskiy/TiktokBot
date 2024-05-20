@@ -9,11 +9,15 @@ from Services.forChat.BuilderState import BuilderState
 from Services.forChat.UserState import UserState
 from Services.forChat.Response import Response
 import Services.Logger as log
+import Services.AsyncTasks as tasks
+import asyncio
 
 tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
 #tokkey = '6729587033:AAExZVf5nYVmDwa81WIWH3bz6T1uOQugLpY'
 
 bot = AsyncTeleBot(tokkey)
+
+tasks.bot = bot
 
 list_user_cheked = []
 list_user_left = []
@@ -223,5 +227,12 @@ async def handle_message(message: types.Message):
 
 config_controller.preload_config()
 
-import asyncio
-asyncio.run(bot.polling())
+
+async def main_fun():
+    tmp1 = asyncio.create_task(bot.polling())
+    tmp2 = asyncio.create_task(tasks.one_minute())
+    await tmp1
+    await tmp2
+
+
+asyncio.run(main_fun())
