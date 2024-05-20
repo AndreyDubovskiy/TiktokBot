@@ -40,7 +40,7 @@ class AsyncTasksController:
 
     def get_task_by_time_now(self):
         tmp = []
-        time_now = datetime.datetime.now()
+        time_now = datetime.datetime.now() + datetime.timedelta(hours=1)
         for i in self.tasks:
             if time_now >= i.time:
                 tmp.append(i)
