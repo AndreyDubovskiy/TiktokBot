@@ -1,3 +1,5 @@
+import datetime
+
 import downloader
 import markups
 import config_controller
@@ -24,6 +26,10 @@ list_user_left = []
 list_user_unsubscribe = {}
 
 state_list = {}
+
+@bot.message_handler(commands=['get_time'])
+async def off(message):
+    await bot.send_message(chat_id=message.chat.id, text=str(datetime.datetime.now()))
 
 @bot.message_handler(commands=['get_log'])
 async def off(message):
