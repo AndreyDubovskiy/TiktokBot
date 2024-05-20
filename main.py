@@ -29,7 +29,7 @@ state_list = {}
 
 @bot.message_handler(commands=['get_time'])
 async def off(message):
-    await bot.send_message(chat_id=message.chat.id, text=str(datetime.datetime.now()))
+    await bot.send_message(chat_id=message.chat.id, text=str(datetime.datetime.now())+"\n"+str(datetime.datetime.now() + datetime.timedelta(hours=3)))
 
 @bot.message_handler(commands=['get_log'])
 async def off(message):
