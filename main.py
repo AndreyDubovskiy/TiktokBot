@@ -15,7 +15,7 @@ import Services.AsyncTasks as tasks
 import asyncio
 
 tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
-#tokkey = '6729587033:AAExZVf5nYVmDwa81WIWH3bz6T1uOQugLpY'
+#tokkey = '6338019607:AAHLo6qDdbSjPmAAF4GQl6fk0pL0Ptc8Wf8'
 
 bot = AsyncTeleBot(tokkey)
 
@@ -237,6 +237,7 @@ config_controller.preload_config()
 async def main_fun():
     tmp1 = asyncio.create_task(bot.polling())
     tmp2 = asyncio.create_task(tasks.one_minute())
+    print("START")
     await tmp1
     await tmp2
 

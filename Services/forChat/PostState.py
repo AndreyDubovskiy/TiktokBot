@@ -65,15 +65,15 @@ class PostState(UserState):
             try:
                 self.edit = None
                 if message.count("-") > 0:
-                    day = int(message.split("-")[0])
-                    month = int(message.split("-")[1])
-                    year = int(message.split("-")[2])
+                    day = int(message.split(" ")[0].split("-")[0])
+                    month = int(message.split(" ")[0].split("-")[1])
+                    year = int(message.split(" ")[0].split("-")[2])
                     hour = int(message.split(" ")[1].split(":")[0])
                     minute = int(message.split(" ")[1].split(":")[1])
                 else:
-                    day = int(message.split(".")[0])
-                    month = int(message.split(".")[1])
-                    year = int(message.split(".")[2])
+                    day = int(message.split(" ")[0].split(".")[0])
+                    month = int(message.split(" ")[0].split(".")[1])
+                    year = int(message.split(" ")[0].split(".")[2])
                     hour = int(message.split(" ")[1].split(":")[0])
                     minute = int(message.split(" ")[1].split(":")[1])
                 date = datetime.datetime(year=year, month=month, day=day, hour=hour, minute=minute)
@@ -81,7 +81,7 @@ class PostState(UserState):
                 return Response(text="Задача на розсилку додана!", is_end=True, redirect="/postlist")
             except Exception as ex:
                 self.edit = "tasksend"
-                return Response(text="Помилка! Ви ввели щось не так! Спробуйте знову ввести.\nПриклад 22.12.2024 13:45", buttons=markups.generate_cancel())
+                return Response(text="Помилка! Ви ввели щось не так! Спробуйте знову ввести.\nПриклад 22-12-2024 13:45", buttons=markups.generate_cancel())
         elif self.edit == "statend":
             self.edit = None
             if message.count("-") > 0:
@@ -160,7 +160,7 @@ class PostState(UserState):
             return Response(text="Уведіть початкову дату для статистики у фарматі дд-мм-рррр", buttons=markups.generate_cancel())
         elif data_btn == "/tasksend":
             self.edit = "tasksend"
-            return Response(text="Уведіть наступним повідомленням дату розсилки у форматі дд-мм-рррр гг:хв\nНаприклад 22.12.2024 13:45", buttons=markups.generate_cancel())
+            return Response(text="Уведіть наступним повідомленням дату розсилки у форматі дд-мм-рррр гг:хв\nНаприклад 22-12-2024 13:45", buttons=markups.generate_cancel())
         elif data_btn == "/send":
             try:
                 list_users = db.get_all_users()

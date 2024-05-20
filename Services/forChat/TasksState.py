@@ -8,6 +8,8 @@ import Services.AsyncTasks as tasks
 
 class TasksState(UserState):
     async def start_msg(self):
+        if len(tasks.tasks_controller.tasks) == 0:
+            return Response(text="Список пустий!", is_end=True, redirect="/menu")
         try:
             text = ""
             for i in tasks.tasks_controller.tasks:
