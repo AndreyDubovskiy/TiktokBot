@@ -1,4 +1,5 @@
 import datetime
+import sys
 
 import downloader
 import markups
@@ -238,7 +239,11 @@ async def main_fun():
     tmp1 = asyncio.create_task(bot.polling())
     tmp2 = asyncio.create_task(tasks.one_minute())
     print("START")
-    await tmp1
+    try:
+        await tmp1
+        sys.exit()
+    except Exception as ex:
+        sys.exit()
     await tmp2
 
 
