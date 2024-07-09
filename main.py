@@ -15,8 +15,8 @@ import Services.Logger as log
 import Services.AsyncTasks as tasks
 import asyncio
 
-#tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
-tokkey = '6338019607:AAHLo6qDdbSjPmAAF4GQl6fk0pL0Ptc8Wf8'
+tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
+#tokkey = '6338019607:AAHLo6qDdbSjPmAAF4GQl6fk0pL0Ptc8Wf8'
 
 bot = AsyncTeleBot(tokkey)
 
