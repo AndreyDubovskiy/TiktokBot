@@ -22,9 +22,7 @@ def down(url, outfile):
                                "Hx-Request": "true",
                                "Hx-Target": "target",
                                "Hx-Trigger": "_gcaptcha_pt"})
-        print("33333", resp, "\n", resp.text)
         link_to_video = resp.text.split('<a href="')[1].split('"')[0]
-        print("LINK", link_to_video)
         filereq = req.get(link_to_video, stream=True, headers={"User-Agent": user})
         file_size = int(filereq.headers.get('Content-Length', 0))
         if (file_size <= 0):
