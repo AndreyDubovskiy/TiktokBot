@@ -11,19 +11,21 @@ async def down_async(url, outfile):
 
 def down(url, outfile):
     try:
+        user = ua.random
         resp = req.post("https://ssstik.io/abc?url=dl",
                       data={"id":url,
                             "locale":"en",
                             "tt":"UGh1UGtk"},
                       headers={"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                               "User-Agent": ua.random,
+                               "User-Agent": user,
                                "Hx-Current-Url": "https://ssstik.io/en-1",
                                "Hx-Request": "true",
                                "Hx-Target": "target",
                                "Hx-Trigger": "_gcaptcha_pt"})
         print("33333", resp, "\n", resp.text)
         link_to_video = resp.text.split('<a href="')[1].split('"')[0]
-        filereq = req.get(link_to_video, stream=True)
+        print("LINK", link_to_video)
+        filereq = req.get(link_to_video, stream=True, headers={"User-Agent": user})
         file_size = int(filereq.headers.get('Content-Length', 0))
         if (file_size <= 0):
             raise
