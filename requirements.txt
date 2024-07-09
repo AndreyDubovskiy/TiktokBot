@@ -4,3 +4,4 @@ SQLAlchemy
 moviepy
 pandas
 plotnine
+fake-useragent
