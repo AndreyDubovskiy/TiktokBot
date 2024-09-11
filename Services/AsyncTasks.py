@@ -61,6 +61,8 @@ async def send(current_name, user_id):
         SLEEP_AFTER_SEC = 10
         MAX_COUNT = 50
         log.add_log("Start sending messages")
+        file_id = None
+        list_file_id = []
         for user in list_users:
             if count % MAX_COUNT == 0 and count != 0:
                 await asyncio.sleep(SLEEP_AFTER_SEC)
@@ -78,33 +80,85 @@ async def send(current_name, user_id):
                                                                   current_url)))
                     current_url += 1
                 if list_photos and len(list_photos) == 1 and text_post:
-                    with open(list_photos[0], 'rb') as photo_file:
-                        await bot.send_photo(chat_id=chat_id, photo=photo_file, caption=text_post,
-                                                  reply_markup=markup_tpm)
+                    if file_id == None:
+                        with open(list_photos[0], 'rb') as photo_file:
+                            tmp_msg = await bot.send_photo(chat_id=chat_id,
+                                                           photo=photo_file,
+                                                           caption=text_post,
+                                                           reply_markup=markup_tpm)
+                            file_id = tmp_msg.photo[0].file_id
+                    else:
+                        await bot.send_photo(chat_id=chat_id,
+                                             photo=file_id,
+                                             caption=text_post,
+                                             reply_markup=markup_tpm)
                 elif list_photos and len(list_photos) == 1:
-                    with open(list_photos[0], 'rb') as photo_file:
-                        await bot.send_photo(chat_id=chat_id, photo=photo_file, reply_markup=markup_tpm)
+                    if file_id == None:
+                        with open(list_photos[0], 'rb') as photo_file:
+                            tmp_msg = await bot.send_photo(chat_id=chat_id,
+                                                           photo=photo_file,
+                                                           reply_markup=markup_tpm)
+                            file_id = tmp_msg.photo[0].file_id
+                    else:
+                        await bot.send_photo(chat_id=chat_id,
+                                             photo=file_id,
+                                             reply_markup=markup_tpm)
                 elif list_photos and len(list_photos) > 1 and text_post:
-                    media = []
-                    for i in list_photos:
-                        with open(i, 'rb') as photo_file:
-                            media.append(types.InputMediaPhoto(media=photo_file))
-                    await bot.send_media_group(chat_id=chat_id, media=media)
-                    await bot.send_message(chat_id=chat_id, text=text_post, reply_markup=markup_tpm)
+                    if len(list_file_id) == 0:
+                        media = []
+                        for i in list_photos:
+                            with open(i, 'rb') as photo_file:
+                                media.append(types.InputMediaPhoto(media=photo_file))
+                        tmp_msg = await bot.send_media_group(chat_id=chat_id,
+                                                            media=media)
+                        for i in tmp_msg:
+                            list_file_id.append(i.photo[0].file_id)
+                        await bot.send_message(chat_id=chat_id,
+                                               text=text_post,
+                                               reply_markup=markup_tpm)
+                    else:
+                        media = []
+                        for i in list_file_id:
+                            media.append(types.InputMediaPhoto(media=file_id))
+                        await bot.send_media_group(chat_id=chat_id,
+                                                    media=media)
+                        await bot.send_message(chat_id=chat_id,
+                                               text=text_post,
+                                               reply_markup=markup_tpm)
                 elif list_videos and len(list_videos) == 1 and text_post:
-                    with open(list_videos[0], 'rb') as video_file:
-                        await bot.send_video(chat_id=chat_id, video=video_file, caption=text_post,
-                                                  reply_markup=markup_tpm)
+                    if file_id == None:
+                        with open(list_videos[0], 'rb') as video_file:
+                            tmp_msg = await bot.send_video(chat_id=chat_id,
+                                                 video=video_file,
+                                                 caption=text_post,
+                                                 reply_markup=markup_tpm)
+                            file_id = tmp_msg.video.file_id
+                    else:
+                        await bot.send_video(chat_id=chat_id,
+                                             video=file_id,
+                                             caption=text_post,
+                                             reply_markup=markup_tpm)
                 elif list_videos and len(list_videos) == 1:
-                    with open(list_videos[0], 'rb') as video_file:
-                        await bot.send_video(chat_id=chat_id, video=video_file, reply_markup=markup_tpm)
+                    if file_id == None:
+                        with open(list_videos[0], 'rb') as video_file:
+                            tmp_msg = await bot.send_video(chat_id=chat_id,
+                                                 video=video_file,
+                                                 reply_markup=markup_tpm)
+                            file_id = tmp_msg.video.file_id
+                    else:
+                        await bot.send_video(chat_id=chat_id,
+                                             video=file_id,
+                                             reply_markup=markup_tpm)
                 elif text_post:
-                    await bot.send_message(chat_id=chat_id, text=text_post, reply_markup=markup_tpm)
+                    await bot.send_message(chat_id=chat_id,
+                                           text=text_post,
+                                           reply_markup=markup_tpm)
                 count += 1
             except Exception as ex:
                 error += 1
                 log.add_log(ex)
-        await bot.send_message(chat_id=user_id, text="Розсилка закінчена!\nРозіслано людям: " + str(count) + "\nПомилок: " + str(error))
+        await bot.send_message(chat_id=user_id,
+                               text="Розсилка закінчена!\nРозіслано людям: " + str(count) + "\nПомилок: " + str(error))
         log.add_log("Finish sending messages "+str(count) + "\nПомилок: " + str(error))
     except Exception as ex:
         log.add_log("FATAL ERROR - " + str(ex))

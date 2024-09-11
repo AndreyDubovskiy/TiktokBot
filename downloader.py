@@ -48,6 +48,7 @@ def down(url, filename):
                                "Referer": "https://musicaldown.com/download"
                            },
                            cookies=coockie)
+            print(resp.text)
             inputs_str = resp.text.split("<input ")
             inputs = [inputs_str[1].split(">")[0], inputs_str[2].split(">")[0], inputs_str[3].split(">")[0]]
 
@@ -112,7 +113,7 @@ def get_from_url(url, file_name, user_agent = ua.random):
     with open(file_name, 'wb') as f:
         f.write(resp.content)
 
-def get_foto_or_video_tiktok(url, outfile):
+def test(url, outfile):
     try:
         user = ua.random
         resp = req.post("https://ssstik.io/abc?url=dl",
@@ -143,3 +144,53 @@ def print_dict(d, name = "test"):
     for i in d:
         print(i, ":", d[i])
     print("---------------------")
+
+def get_foto_or_video_tiktok(url, outfile):
+    try:
+        user = ua.random
+        resp = req.post("https://ssstik.io/abc?url=dl",
+                        data={"id": url,
+                              "locale": "en",
+                              "tt": "UGh1UGtk"},
+                        headers={"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                                 "User-Agent": user,
+                                 "Hx-Current-Url": "https://ssstik.io/en-1",
+                                 "Hx-Request": "true",
+                                 "Hx-Target": "target",
+                                 "Hx-Trigger": "_gcaptcha_pt"})
+
+        if resp.text.count('<li class="splide__slide" style="') > 0:
+            text_split = resp.text.split('<li class="splide__slide" style="')
+            text_split.pop(0)
+            urls = []
+            for i in text_split:
+                urls.append(i.split('<a href="')[1].split('"')[0])
+
+            url_music = resp.text.split('Download MP3</a>')[0].split('<a href="')[-1].split('"')[0]
+            get_from_url(url_music, outfile + ".mp3", user)
+
+            imgs_paths = []
+
+            for i in urls:
+                get_from_url(i, outfile + "_" + str(urls.index(i)) + ".png", user)
+                imgs_paths.append(outfile + "_" + str(urls.index(i)) + ".png")
+
+            return "photo", imgs_paths, outfile + ".mp3"
+
+
+        link_to_video = resp.text.split('<a href="')[1].split('"')[0]
+        filereq = req.get(link_to_video, stream=True, headers={"User-Agent": user})
+        file_size = int(filereq.headers.get('Content-Length', 0))
+        if (file_size <= 0):
+            raise
+        with open(outfile + ".mp4", "wb") as receive:
+            shutil.copyfileobj(filereq.raw, receive)
+        del filereq
+        return 'video', outfile + ".mp4", None
+    except Exception as ex:
+        print("ERROR",ex)
+        return None, None, None
+
+#test(url="https://vm.tiktok.com/ZMhJ7Ugnw/", outfile="test")
+
+
