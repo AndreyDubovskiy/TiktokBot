@@ -36,6 +36,7 @@ class BuilderState:
             "/texthello": TextHelloState,
             "/textcontact": TextContactState,
             "/menu": MenuState,
+            "/intro": MenuState,
             "/listsubscribe": ListSubscribeState,
             "/postlist": PostState,
             "/geturl": GeturlState,
