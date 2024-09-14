@@ -57,6 +57,7 @@ async def send(current_name, user_id):
         list_users = db.get_all_users()
         count = 0
         error = 0
+        deleted_count = 0
         len_users = len(list_users)
         SLEEP_AFTER_SEC = 10
         MAX_COUNT = 50
@@ -75,7 +76,7 @@ async def send(current_name, user_id):
                 markup_tpm = types.InlineKeyboardMarkup(row_width=2)
                 current_url = 0
                 for i in list_urls:
-                    markup_tpm.add(types.InlineKeyboardButton(text="Перейти за посиланням",
+                    markup_tpm.add(types.InlineKeyboardButton(text="Показати посилання",
                                                               callback_data="/geturl_" + current_name + "_" + str(
                                                                   current_url)))
                     current_url += 1
@@ -119,7 +120,7 @@ async def send(current_name, user_id):
                     else:
                         media = []
                         for i in list_file_id:
-                            media.append(types.InputMediaPhoto(media=file_id))
+                            media.append(types.InputMediaPhoto(media=i))
                         await bot.send_media_group(chat_id=chat_id,
                                                     media=media)
                         await bot.send_message(chat_id=chat_id,
@@ -157,6 +158,12 @@ async def send(current_name, user_id):
             except Exception as ex:
                 error += 1
                 log.add_log(ex)
+                try:
+                    db.delete_user(user.id)
+                    deleted_count += 1
+                    log.add_log("DELETED USER - " + str(user.id))
+                except Exception as ex1:
+                    log.add_log(ex1)
         await bot.send_message(chat_id=user_id,
                                text="Розсилка закінчена!\nРозіслано людям: " + str(count) + "\nПомилок: " + str(error))
         log.add_log("Finish sending messages "+str(count) + "\nПомилок: " + str(error))

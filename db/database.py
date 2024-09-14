@@ -12,6 +12,15 @@ engine = create_engine("sqlite:///mainbase.db", echo=False)
 
 BaseModel.metadata.create_all(engine)
 
+def delete_user(user_id):
+    with Session(engine) as session:
+        query = select(EventModel).where(EventModel.user_id==user_id)
+        res: UserModel = session.scalar(query)
+        session.delete(res)
+        query = select(UserModel).where(UserModel.id==user_id)
+        res: UserModel = session.scalar(query)
+        session.delete(res)
+        session.commit()
 
 def get_all_users():
     with Session(engine) as session:

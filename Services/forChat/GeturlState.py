@@ -34,13 +34,14 @@ class GeturlState(UserState):
             markup_tpm = types.InlineKeyboardMarkup(row_width=2)
             for i in buttons_dict:
                 if data_btn == i.get("callback_data", None):
-                    markup_tpm.add(types.InlineKeyboardButton(text=i['text'], url=config_controller.LIST_POSTS[name]['urls'][url_ind]))
+                    #i['text']
+                    markup_tpm.add(types.InlineKeyboardButton(text="Перейти за посиланням", url=config_controller.LIST_POSTS[name]['urls'][url_ind]))
                     db.add_user_event_by_tg_id(user_tg_id=self.user_id, event_name="joinFrom_"+name+"_"+str(url_ind))
                 else:
                     if i.get("callback_data", None) != None:
-                        markup_tpm.add(types.InlineKeyboardButton(text=i['text'], callback_data=i['callback_data']))
+                        markup_tpm.add(types.InlineKeyboardButton(text="Перейти за посиланням", callback_data=i['callback_data']))
                     else:
-                        markup_tpm.add(types.InlineKeyboardButton(text=i['text'], url=i['url']))
+                        markup_tpm.add(types.InlineKeyboardButton(text="Перейти за посиланням", url=i['url']))
 
             await self.bot.edit_message_reply_markup(chat_id=message.chat.id, message_id=message.id, reply_markup=markup_tpm)
         except Exception as ex:
