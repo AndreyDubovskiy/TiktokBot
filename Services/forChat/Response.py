@@ -14,9 +14,9 @@ class Response:
     async def send(self, user_chat_id: str, bot: AsyncTeleBot):
         if self.text is not None:
             if self.buttons is not None:
-                await bot.send_message(user_chat_id, self.text, reply_markup=self.buttons)
+                await bot.send_message(user_chat_id, self.text, reply_markup=self.buttons, parse_mode="HTML")
             else:
-                await bot.send_message(user_chat_id, self.text)
+                await bot.send_message(user_chat_id, self.text, parse_mode="HTML")
         if self.documents is not None:
             for document in self.documents:
                 await bot.send_document(user_chat_id, document)

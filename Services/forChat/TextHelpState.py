@@ -15,7 +15,7 @@ class TextHelpState(UserState):
 
     async def next_msg(self, message: str):
         if self.is_login:
-            res = config_controller.change_text_help(self.user_id, message)
+            res = config_controller.change_text_help(self.user_id, self.message_obj.html_text)
             if res:
                 return Response(text="Ви замінили текст!", is_end=True, redirect="/menu")
             else:

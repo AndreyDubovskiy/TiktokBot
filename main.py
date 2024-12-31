@@ -85,7 +85,7 @@ async def download(message: types.Message):
                     print("try send ", message.chat.id)
                     await bot.send_video(chat_id=message.chat.id, video=file)
                 if config_controller.IS_SEND_AFTERVIDEO:
-                    await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO)
+                    await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO, parse_mode="HTML")
                 os.remove(str(chat_id) + ".mp4")
             elif what == 'photo':
                 media_group = []
@@ -98,7 +98,7 @@ async def download(message: types.Message):
                 with open(music, 'rb') as mus:
                     await bot.send_audio(chat_id=message.chat.id, audio=mus)
                 if config_controller.IS_SEND_AFTERVIDEO:
-                    await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO)
+                    await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO, parse_mode="HTML")
                 for photo in this:
                     os.remove(photo)
                 os.remove(music)
@@ -222,11 +222,13 @@ async def handle_message(message: types.Message):
     if state_list.get(id_list, None) == None:
         builder = BuilderState(bot)
         state = builder.create_state(text, user_id, user_chat_id, bot)
+        state.message_obj = message
         state_list[id_list] = state
         res: Response = await state.start_msg()
         await chek_response(user_chat_id, user_id, id_list, res)
     else:
         state: UserState = state_list[id_list]
+        state.message_obj = message
         res: Response = await state.next_msg(text)
         await chek_response(user_chat_id, user_id, id_list, res)
 

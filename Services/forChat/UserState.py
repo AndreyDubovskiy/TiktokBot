@@ -5,6 +5,7 @@ class UserState:
         self.user_id = user_id
         self.user_chat_id = user_chat_id
         self.bot = bot
+        self.message_obj: types.Message = None
 
     async def start_msg(self):
         pass
