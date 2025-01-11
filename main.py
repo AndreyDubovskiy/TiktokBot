@@ -15,8 +15,10 @@ import Services.Logger as log
 import Services.AsyncTasks as tasks
 import asyncio
 
-tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
-#tokkey = '6338019607:AAGtmGTAKAZSSnNkQ3BbO0gkJm1_huVvhqI'
+from Services.download.instagramm.InstaManager import static_insta_manager
+
+#tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
+tokkey = '6338019607:AAGtmGTAKAZSSnNkQ3BbO0gkJm1_huVvhqI'
 
 bot = AsyncTeleBot(tokkey)
 
@@ -69,6 +71,46 @@ async def request_join(chat_invite: types.ChatJoinRequest):
 @bot.message_handler(commands=['passwordadmin','help', 'passwordmoder', 'helpadmin', 'log', 'textafter', 'start', 'texthelp', 'texthello', 'textcontact','menu'])
 async def passwordadmin(message):
     await handle_message(message)
+
+@bot.message_handler(func=lambda message: message.text.startswith("https://www.instagram.com"), content_types=['text'])
+async def download(message: types.Message):
+    try:
+        if await is_subscribe(message.from_user.id):
+            chat_id = str(message.from_user.id) + str(message.chat.id)
+            msg_del = await bot.send_message(chat_id=message.chat.id, text="Відео готується, декілька секунд...")
+            files = await static_insta_manager.download(message.text, str(chat_id))
+            await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
+
+            max_files = 10
+            current_files = 0
+            media_group = []
+            for i in files:
+                with open(i[1], 'rb') as file:
+                    if i[0] == "image":
+                        media_group.append(types.InputMediaPhoto(media=file))
+                    else:
+                        media_group.append(types.InputMediaVideo(media=file))
+                current_files += 1
+                if current_files >= max_files:
+                    await bot.send_media_group(chat_id=message.chat.id, media=media_group)
+                    media_group = []
+                    current_files = 0
+            if current_files > 0:
+                await bot.send_media_group(chat_id=message.chat.id, media=media_group)
+            if config_controller.IS_SEND_AFTERVIDEO:
+                await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO,
+                                       parse_mode="HTML")
+            for i in files:
+                try:
+                    os.remove(i[1])
+                except:
+                    pass
+        else:
+            await bot.send_message(chat_id=message.chat.id, text="Ви не підписані на канал!\nДля користування ботом підпишіться на канали:", reply_markup=markups.generate_markup_subscribe())
+    except Exception as ex:
+        print(ex)
+        await bot.reply_to(message, config_controller.CONTACT_HELP)
+        await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
 
 @bot.message_handler(func=lambda message: message.text.startswith("https://www.tiktok.com") or message.text.startswith("https://vm.tiktok.com") or message.text.startswith("https://vt.tiktok.com"), content_types=['text'])
 async def download(message: types.Message):
