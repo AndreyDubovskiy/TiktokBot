@@ -16,9 +16,10 @@ import Services.AsyncTasks as tasks
 import asyncio
 
 from Services.download.instagramm.InstaManager import static_insta_manager
+from Services.download.youtube.YoutubeManager import static_youtube_manager
 
-#tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
-tokkey = '6338019607:AAGtmGTAKAZSSnNkQ3BbO0gkJm1_huVvhqI'
+tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
+#tokkey = '6338019607:AAGtmGTAKAZSSnNkQ3BbO0gkJm1_huVvhqI'
 
 bot = AsyncTeleBot(tokkey)
 
@@ -72,6 +73,26 @@ async def request_join(chat_invite: types.ChatJoinRequest):
 async def passwordadmin(message):
     await handle_message(message)
 
+
+@bot.message_handler(func=lambda message: message.text.startswith("https://www.youtube.com"), content_types=['text'])
+async def download(message: types.Message):
+    try:
+        if await is_subscribe(message.from_user.id):
+            user_id = str(message.from_user.id)
+            user_chat_id = str(message.chat.id)
+            id_list = user_id + user_chat_id
+            builder = BuilderState(bot)
+            state = builder.create_state("/youtube", user_id, user_chat_id, bot)
+            state.message_obj = message
+            state_list[id_list] = state
+            res: Response = await state.start_msg()
+            await chek_response(user_chat_id, user_id, id_list, res)
+        else:
+            await bot.send_message(chat_id=message.chat.id, text="Ви не підписані на канал!\nДля користування ботом підпишіться на канали:", reply_markup=markups.generate_markup_subscribe())
+    except Exception as ex:
+        print(ex)
+        await bot.reply_to(message, config_controller.CONTACT_HELP)
+
 @bot.message_handler(func=lambda message: message.text.startswith("https://www.instagram.com"), content_types=['text'])
 async def download(message: types.Message):
     try:
@@ -84,12 +105,18 @@ async def download(message: types.Message):
             max_files = 10
             current_files = 0
             media_group = []
+            links_big_file = []
+            print(files)
             for i in files:
-                with open(i[1], 'rb') as file:
-                    if i[0] == "image":
-                        media_group.append(types.InputMediaPhoto(media=file))
+                if i[0] == "image":
+                    media_group.append(types.InputMediaPhoto(media=open(i[1], 'rb')))
+                else:
+                    file_size = os.path.getsize(i[1]) / (1024 * 1024)
+                    if file_size < 50:
+                        media_group.append(types.InputMediaVideo(media=open(i[1], 'rb')))
                     else:
-                        media_group.append(types.InputMediaVideo(media=file))
+                        links_big_file.append(i)
+                        continue
                 current_files += 1
                 if current_files >= max_files:
                     await bot.send_media_group(chat_id=message.chat.id, media=media_group)
@@ -97,6 +124,18 @@ async def download(message: types.Message):
                     current_files = 0
             if current_files > 0:
                 await bot.send_media_group(chat_id=message.chat.id, media=media_group)
+            if len(links_big_file) > 0:
+                mm = await bot.send_message(chat_id=message.chat.id, text="Відео, які були більше 50мб завантажуються, трішки зачекайте...")
+                links = []
+                for i in links_big_file:
+                    url_file = await static_insta_manager.upload_file(i[1])
+                    links.append(url_file)
+                await bot.delete_message(chat_id=mm.chat.id, message_id=mm.id)
+                text_ahref = ""
+                for i in links:
+                    text_ahref += "<a href='" + i + "'>Завантажити відео</a>\n"
+                await bot.send_message(chat_id=message.chat.id, text="Завантаження:\n"+text_ahref, disable_web_page_preview=True, parse_mode="HTML")
+
             if config_controller.IS_SEND_AFTERVIDEO:
                 await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO,
                                        parse_mode="HTML")
@@ -109,6 +148,7 @@ async def download(message: types.Message):
             await bot.send_message(chat_id=message.chat.id, text="Ви не підписані на канал!\nДля користування ботом підпишіться на канали:", reply_markup=markups.generate_markup_subscribe())
     except Exception as ex:
         print(ex)
+        #print(str(ex).count("Request Entity Too Large") > 0)
         await bot.reply_to(message, config_controller.CONTACT_HELP)
         await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
 

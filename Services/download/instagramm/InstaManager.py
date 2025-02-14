@@ -3,6 +3,7 @@ import asyncio
 from fake_useragent import UserAgent
 import time
 import Services.download.instagramm.downloader as insta_downloader
+from Services.upload.fileconvoy.uploader import upload_file
 
 
 # async def down_async(url, outfile):
@@ -51,6 +52,9 @@ class InstaManager:
 
         self.count -= 1
         return files
+
+    async def upload_file(self, filename) -> str:
+        return await asyncio.to_thread(upload_file, filename)
 
     async def download(self, url, file_name):
         if self.is_dont_limited() and len(self.queue) == 0:

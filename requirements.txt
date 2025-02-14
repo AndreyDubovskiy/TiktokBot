@@ -5,3 +5,6 @@ moviepy
 pandas
 plotnine
 fake-useragent
+beautifulsoup4
+pytubefix
+pyffmpeg
