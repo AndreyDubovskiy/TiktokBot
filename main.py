@@ -74,7 +74,7 @@ async def passwordadmin(message):
     await handle_message(message)
 
 
-@bot.message_handler(func=lambda message: message.text.startswith("https://www.youtube.com"), content_types=['text'])
+@bot.message_handler(func=lambda message: message.text.startswith("https://www.youtube.com") or message.text.startswith("https://m.youtube.com") or message.text.startswith("https://youtu.be") or message.text.startswith("https://youtube.com"), content_types=['text'])
 async def download(message: types.Message):
     try:
         if await is_subscribe(message.from_user.id):
