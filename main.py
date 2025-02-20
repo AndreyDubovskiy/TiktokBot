@@ -74,24 +74,24 @@ async def passwordadmin(message):
     await handle_message(message)
 
 
-@bot.message_handler(func=lambda message: message.text.startswith("https://www.youtube.com") or message.text.startswith("https://m.youtube.com") or message.text.startswith("https://youtu.be") or message.text.startswith("https://youtube.com"), content_types=['text'])
-async def download(message: types.Message):
-    try:
-        if await is_subscribe(message.from_user.id):
-            user_id = str(message.from_user.id)
-            user_chat_id = str(message.chat.id)
-            id_list = user_id + user_chat_id
-            builder = BuilderState(bot)
-            state = builder.create_state("/youtube", user_id, user_chat_id, bot)
-            state.message_obj = message
-            state_list[id_list] = state
-            res: Response = await state.start_msg()
-            await chek_response(user_chat_id, user_id, id_list, res)
-        else:
-            await bot.send_message(chat_id=message.chat.id, text="Ви не підписані на канал!\nДля користування ботом підпишіться на канали:", reply_markup=markups.generate_markup_subscribe())
-    except Exception as ex:
-        print(ex)
-        await bot.reply_to(message, config_controller.CONTACT_HELP)
+# @bot.message_handler(func=lambda message: message.text.startswith("https://www.youtube.com") or message.text.startswith("https://m.youtube.com") or message.text.startswith("https://youtu.be") or message.text.startswith("https://youtube.com"), content_types=['text'])
+# async def download(message: types.Message):
+#     try:
+#         if await is_subscribe(message.from_user.id):
+#             user_id = str(message.from_user.id)
+#             user_chat_id = str(message.chat.id)
+#             id_list = user_id + user_chat_id
+#             builder = BuilderState(bot)
+#             state = builder.create_state("/youtube", user_id, user_chat_id, bot)
+#             state.message_obj = message
+#             state_list[id_list] = state
+#             res: Response = await state.start_msg()
+#             await chek_response(user_chat_id, user_id, id_list, res)
+#         else:
+#             await bot.send_message(chat_id=message.chat.id, text="Ви не підписані на канал!\nДля користування ботом підпишіться на канали:", reply_markup=markups.generate_markup_subscribe())
+#     except Exception as ex:
+#         print(ex)
+#         await bot.reply_to(message, config_controller.CONTACT_HELP)
 
 @bot.message_handler(func=lambda message: message.text.startswith("https://www.instagram.com"), content_types=['text'])
 async def download(message: types.Message):
