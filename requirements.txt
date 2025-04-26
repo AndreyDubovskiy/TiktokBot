@@ -7,3 +7,4 @@ plotnine
 fake-useragent
 instaloader
 beautifulsoup4
+pytubefix
