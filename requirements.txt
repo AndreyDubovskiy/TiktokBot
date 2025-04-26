@@ -9,3 +9,4 @@ instaloader
 beautifulsoup4
 pytubefix
 pyffmpeg
+yt_dlp
