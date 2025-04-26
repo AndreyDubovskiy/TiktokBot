@@ -22,7 +22,7 @@ def download_reels_new(url, file_name):
                                   "type": "hidden"}).get("value")
     locale = soup.find("input", {"name": "locale",
                                  "type": "hidden"}).get("value")
-    p = soup.find("input", {"name": "p",
+    p = soup.find("input", {"name": "i",
                             "type": "hidden"}).get("value")
     _token = soup.find("input", {"name": "_token",
                                  "type": "hidden"}).get("value")
@@ -31,7 +31,7 @@ def download_reels_new(url, file_name):
     data_post = {
         "referer": referer,
         "locale": locale,
-        "p": p,
+        "i": p,
         "_token": _token,
         "link": link
     }

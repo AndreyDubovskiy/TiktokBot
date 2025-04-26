@@ -84,12 +84,14 @@ async def download(message: types.Message):
             max_files = 10
             current_files = 0
             media_group = []
+            file_rb_s = []
             for i in files:
-                with open(i[1], 'rb') as file:
-                    if i[0] == "image":
-                        media_group.append(types.InputMediaPhoto(media=file))
-                    else:
-                        media_group.append(types.InputMediaVideo(media=file))
+
+                file_rb_s.append(open(i[1], 'rb'))
+                if i[0] == "image":
+                    media_group.append(types.InputMediaPhoto(media=file_rb_s[-1]))
+                else:
+                    media_group.append(types.InputMediaVideo(media=file_rb_s[-1]))
                 current_files += 1
                 if current_files >= max_files:
                     await bot.send_media_group(chat_id=message.chat.id, media=media_group)
@@ -100,6 +102,8 @@ async def download(message: types.Message):
             if config_controller.IS_SEND_AFTERVIDEO:
                 await bot.send_message(chat_id=message.chat.id, text=config_controller.TEXT_AFTER_VIDEO,
                                        parse_mode="HTML")
+            for i in file_rb_s:
+                i.close()
             for i in files:
                 try:
                     os.remove(i[1])
@@ -119,7 +123,18 @@ async def download(message: types.Message):
             chat_id = str(message.from_user.id) + str(message.chat.id)
             msg_del = await bot.send_message(chat_id=message.chat.id, text="Відео готується, декілька секунд...")
             print("Start DOWNLOAD")
-            what, this, music = await downloader.down_async(message.text, str(chat_id))
+            what, this, music = None, None, None
+            iter_num = 0
+            iter_max = 5
+            while(True):
+                if iter_num > iter_max:
+                    break
+                try:
+                    what, this, music = await downloader.down_async(message.text, str(chat_id))
+                except:
+                    iter_num += 1
+                    continue
+                break
             print("END DOWNLOAD", what, this, music)
             await bot.delete_message(chat_id=msg_del.chat.id, message_id=msg_del.id)
             if what == 'video':
