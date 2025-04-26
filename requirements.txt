@@ -6,3 +6,4 @@ pandas
 plotnine
 fake-useragent
 instaloader
+beautifulsoup4

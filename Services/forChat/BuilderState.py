@@ -18,6 +18,7 @@ from Services.forChat.GeturlState import GeturlState
 from Services.forChat.BoolafterState import BoolafterState
 from Services.forChat.TasksState import TasksState
 from Services.forChat.TasksClearState import TasksClearState
+from Services.forChat.YoutubeState import YoutubeState
 
 class BuilderState:
     def __init__(self, bot: AsyncTeleBot):
@@ -42,6 +43,7 @@ class BuilderState:
             "/geturl": GeturlState,
             "/boolafter": BoolafterState,
             "/tasks": TasksState,
-            "/tasksclear": TasksClearState
+            "/tasksclear": TasksClearState,
+            "/youtube": YoutubeState,
         }
         return clssses[data_txt](user_id, user_chat_id, bot)

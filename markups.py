@@ -1,3 +1,4 @@
+from pytubefix import StreamQuery
 from telebot import types
 import config_controller
 
@@ -32,7 +33,7 @@ def generate_post_menu(offset: int=0, max:int = 5):
         markup.add(types.InlineKeyboardButton(text="-->", callback_data="/next"))
         markup.add(types.InlineKeyboardButton(text="<--", callback_data="/prev"))
     markup.add(types.InlineKeyboardButton(text="Додати", callback_data="/add"))
-    markup.add(types.InlineKeyboardButton(text="Відмінити", callback_data="/cancel"))
+    markup.add(types.InlineKeyboardButton(text="❌Відмінити❌", callback_data="/cancel"))
     return markup
 
 def generate_post_semimenu():
@@ -41,13 +42,13 @@ def generate_post_semimenu():
     markup.add(types.InlineKeyboardButton(text="Розіслати", callback_data="/send"))
     markup.add(types.InlineKeyboardButton(text="Запланувати розсилку", callback_data="/tasksend"))
     markup.add(types.InlineKeyboardButton(text="Статистика", callback_data="/stat"))
-    markup.add(types.InlineKeyboardButton(text="Відмінити", callback_data="/cancel"))
+    markup.add(types.InlineKeyboardButton(text="❌Відмінити❌", callback_data="/cancel"))
     return markup
 
 
 def generate_cancel():
     markup = types.InlineKeyboardMarkup(row_width=2)
-    markup.add(types.InlineKeyboardButton(text="Відмінити", callback_data="/cancel"))
+    markup.add(types.InlineKeyboardButton(text="❌Відмінити❌", callback_data="/cancel"))
     return markup
 
 def generate_subscribe_menu():
@@ -56,7 +57,7 @@ def generate_subscribe_menu():
         markup.add(types.InlineKeyboardButton(text=i, callback_data=i))
     if config_controller.get_size_subscribe() < 10:
         markup.add(types.InlineKeyboardButton(text="Додати", callback_data="/add"))
-    markup.add(types.InlineKeyboardButton(text="Відмінити", callback_data="/cancel"))
+    markup.add(types.InlineKeyboardButton(text="❌Відмінити❌", callback_data="/cancel"))
     return markup
 
 def generate_subscribe_semimenu():
@@ -64,7 +65,7 @@ def generate_subscribe_semimenu():
     markup.add(types.InlineKeyboardButton(text="Редагувати", callback_data="/edit"))
     markup.add(types.InlineKeyboardButton(text="Видалити", callback_data="/delete"))
     markup.add(types.InlineKeyboardButton(text="Статистика", callback_data="/stat"))
-    markup.add(types.InlineKeyboardButton(text="Відмінити", callback_data="/cancel"))
+    markup.add(types.InlineKeyboardButton(text="❌Відмінити❌", callback_data="/cancel"))
     return markup
 
 def generate_markup_menu():
@@ -91,5 +92,18 @@ def generate_markup_day_month_year():
     markup.add(types.InlineKeyboardButton(text="По дням", callback_data="/day"))
     markup.add(types.InlineKeyboardButton(text="По місяцям", callback_data="/month"))
     markup.add(types.InlineKeyboardButton(text="По рокам", callback_data="/year"))
-    markup.add(types.InlineKeyboardButton(text="Відміна", callback_data="/cancel"))
+    markup.add(types.InlineKeyboardButton(text="❌Відміна❌", callback_data="/cancel"))
+    return markup
+
+def generate_markup_resolution(with_audio, without_audio):
+    markup = types.InlineKeyboardMarkup(row_width=2)
+
+    for i in with_audio:
+        markup.add(types.InlineKeyboardButton(text=i+" (швидко)🔥", callback_data=i))
+
+    for i in without_audio:
+        markup.add(types.InlineKeyboardButton(text=i, callback_data=i))
+
+
+    markup.add(types.InlineKeyboardButton(text="❌Відмінити❌", callback_data="/cancel"))
     return markup
