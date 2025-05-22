@@ -4,6 +4,7 @@ from fake_useragent import UserAgent
 import time
 import Services.download.instagramm.downloader as insta_downloader
 import Services.download.instagramm.downloader2 as insta_downloader2
+import Services.download.instagramm.downloader3 as insta_downloader3
 
 
 # async def down_async(url, outfile):
@@ -41,9 +42,12 @@ class InstaManager:
         self.count += 1
         start_time = time.time()
         try:
-            files = await asyncio.to_thread(insta_downloader2.download_reels_new, url, file_name)
+            files = await asyncio.to_thread(insta_downloader3.download_reels_new, url, file_name)
         except:
-            files = await asyncio.to_thread(insta_downloader.download_reels_new, url, file_name)
+            try:
+                files = await asyncio.to_thread(insta_downloader2.download_reels_new, url, file_name)
+            except:
+                files = await asyncio.to_thread(insta_downloader.download_reels_new, url, file_name)
 
         end_time = time.time()
         full_time = end_time - start_time
