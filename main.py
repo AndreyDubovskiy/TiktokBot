@@ -295,15 +295,21 @@ config_controller.preload_config()
 
 
 async def main_fun():
-    tmp1 = asyncio.create_task(bot.polling())
-    tmp2 = asyncio.create_task(tasks.one_minute())
-    print("START")
     try:
-        await tmp1
-        sys.exit()
+        tmp1 = asyncio.create_task(bot.polling())
+        tmp2 = asyncio.create_task(tasks.one_minute())
+        print("START")
+        try:
+            await tmp1
+            sys.exit()
+        except Exception as ex:
+            print(ex)
+            sys.exit()
+        await tmp2
     except Exception as ex:
-        sys.exit()
-    await tmp2
+        print(ex)
+    finally:
+        await bot.close_session()
 
 
 asyncio.run(main_fun())
