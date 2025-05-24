@@ -133,6 +133,7 @@ async def download(message: types.Message):
                     what, this, music = await downloader.down_async(message.text, str(chat_id))
                 except:
                     iter_num += 1
+                    await asyncio.sleep(5)
                     continue
                 break
             print("END DOWNLOAD", what, this, music)
