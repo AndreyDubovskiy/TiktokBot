@@ -41,7 +41,7 @@ class PostState(UserState):
             self.newtext = self.message_obj.html_text
             self.edit = "addurls"
             return Response(
-                text="Напишіть посилання, які потрібно додати до поста (якщо не одне посилання, то кожне посилання з нового рядка. Але одним повідомленням)\n\nЯкщо посилання з інстаграму або тіктоку, то додайте спочатку '...', наприклад, ...instagram.com\post\one:", buttons=markups.generate_cancel())
+                text="Напишіть посилання, які потрібно додати до поста (якщо не одне посилання, то кожне посилання з нового рядка. Але одним повідомленням). Якщо посилання з інстаграму або тіктоку, то додайте спочатку '...', наприклад, ...instagram.com\post\one:", buttons=markups.generate_cancel())
         elif self.edit == "addurls":
             self.newurls = message.replace("...", "").replace("... ", "").split("\n")
             self.edit = None
