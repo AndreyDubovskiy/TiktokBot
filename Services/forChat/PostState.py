@@ -41,9 +41,9 @@ class PostState(UserState):
             self.newtext = self.message_obj.html_text
             self.edit = "addurls"
             return Response(
-                text="Напишіть посилання, які потрібно додати до поста (якщо не одне посилання, то кожне посилання з нового рядка. Але одним повідомленням):", buttons=markups.generate_cancel())
+                text="Напишіть посилання, які потрібно додати до поста (якщо не одне посилання, то кожне посилання з нового рядка. Але одним повідомленням)\n\nЯкщо посилання з інстаграму або тіктоку, то додайте спочатку '...', наприклад, ...instagram.com\post\one:", buttons=markups.generate_cancel())
         elif self.edit == "addurls":
-            self.newurls = message.split("\n")
+            self.newurls = message.replace("...", "").replace("... ", "").split("\n")
             self.edit = None
             if config_controller.add_or_edit_post(self.newname, text=self.newtext, urls=self.newurls, photos=self.newphotos, videos=self.newvideos):
                 return Response(text="Успішно додано!", is_end=True, redirect="/postlist")
