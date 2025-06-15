@@ -17,7 +17,7 @@ import asyncio
 
 from Services.download.instagramm.InstaManager import static_insta_manager
 
-tokkey = '6784215022:AAEq6bC7yBjUS6wEV6wcToHXisb00sFbJLo'
+tokkey = ''
 #tokkey = '6338019607:AAGtmGTAKAZSSnNkQ3BbO0gkJm1_huVvhqI'
 
 bot = AsyncTeleBot(tokkey)
