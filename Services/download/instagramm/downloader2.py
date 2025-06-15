@@ -1,19 +1,29 @@
-import requests as req
-from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
 import instaloader
 import os
 import shutil
 
+
 L = instaloader.Instaloader()
 
-url_servis = "https://indown.io/"
-url_post = "https://indown.io/download"
+import time
+LIMITED_MAX_HOUR = 50
+CURRENT_LIMIT = 0
+CURRENT_TIME = time.time()
 
 ua = UserAgent()
 
 def download_reels_new(url: str, file_name: str):
+    global LIMITED_MAX_HOUR, CURRENT_LIMIT, CURRENT_TIME
+    #print("down2 Instaloader")
+    if (time.time()-CURRENT_TIME) > 3600:
+        CURRENT_TIME = time.time()
+        CURRENT_LIMIT = 0
+    if CURRENT_LIMIT >= LIMITED_MAX_HOUR:
+        raise Exception("LIMITED REQ")
+    else:
+        CURRENT_LIMIT += 1
     files = []
     is_reels = False
     if url.count("/reel/") > 0:
@@ -66,4 +76,6 @@ def download_reels_new(url: str, file_name: str):
     #     download_file_url(video, tmp_name)
     #     files.append(["video", tmp_name])
 
+    if len(files) == 0:
+        raise Exception("nuul")
     return files

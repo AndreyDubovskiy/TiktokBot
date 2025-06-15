@@ -5,6 +5,8 @@ import time
 import Services.download.instagramm.downloader as insta_downloader
 import Services.download.instagramm.downloader2 as insta_downloader2
 import Services.download.instagramm.downloader3 as insta_downloader3
+import Services.download.instagramm.downloader4 as insta_downloader4
+import random
 
 
 # async def down_async(url, outfile):
@@ -41,13 +43,38 @@ class InstaManager:
     async def download_reels(self, url, file_name):
         self.count += 1
         start_time = time.time()
-        try:
-            files = await asyncio.to_thread(insta_downloader3.download_reels_new, url, file_name)
-        except:
+        list_downloaders = [
+            insta_downloader4.download_reels_new,
+            insta_downloader3.download_reels_new,
+            insta_downloader2.download_reels_new,
+            insta_downloader.download_reels_new,
+        ]
+        files = None
+        while(True):
+            if len(list_downloaders) == 0:
+                raise Exception("Error all")
+            down = random.choice(list_downloaders)
+            list_downloaders.remove(down)
             try:
-                files = await asyncio.to_thread(insta_downloader2.download_reels_new, url, file_name)
-            except:
-                files = await asyncio.to_thread(insta_downloader.download_reels_new, url, file_name)
+                files = await asyncio.to_thread(down, url, file_name)
+                #print("FILES LIST", files)
+                if len(files) == 0:
+                    #print("FILES - 0")
+                    continue
+                break
+            except Exception as ex:
+                #print("EEEEEE", ex)
+                continue
+
+
+
+        # try:
+        #     files = await asyncio.to_thread(insta_downloader3.download_reels_new, url, file_name)
+        # except:
+        #     try:
+        #         files = await asyncio.to_thread(insta_downloader2.download_reels_new, url, file_name)
+        #     except:
+        #         files = await asyncio.to_thread(insta_downloader.download_reels_new, url, file_name)
 
         end_time = time.time()
         full_time = end_time - start_time

@@ -5,9 +5,11 @@ from fake_useragent import UserAgent
 url_servis = "https://indown.io/"
 url_post = "https://indown.io/download"
 
+
 ua = UserAgent()
 
 def download_reels_new(url, file_name):
+    #print("down1 https://indown.io/")
     useragent = ua.random
     headers = {
         "User-Agent": useragent
@@ -72,5 +74,7 @@ def download_reels_new(url, file_name):
         download_file_url(video, tmp_name)
         files.append(["video", tmp_name])
 
+    if len(files) == 0:
+        raise Exception("null")
     return files
 
