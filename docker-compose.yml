@@ -11,7 +11,7 @@ services:
     networks: [internal]
 
   dbapi:
-    build: ./DatabaseAPI
+    build: ./DataBaseAPI
     restart: always
     networks: [internal]
 
