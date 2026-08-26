@@ -1,0 +1,7 @@
+aiohttp
+aiosqlite
+SQLAlchemy
+fastapi
+uvicorn
+httpx
+python-multipart

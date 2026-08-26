@@ -1,0 +1,9 @@
+aiohttp
+fake-useragent
+beautifulsoup4
+fastapi
+uvicorn
+httpx
+python-multipart
+playwright
+playwright-stealth

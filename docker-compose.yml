@@ -1,4 +1,35 @@
 services:
-  mybot:
-    image: testimage
+  bot:
+    build: ./TgBot
     restart: always
+    depends_on: [downloadapi, sendingapi, dbapi]
+    environment:
+      - BOT_TOKEN=6338019607:AAG59LrJuKePOlGgepikMt86h14riUZ-vPA
+      - DOWNLOAD_API_BASE_URL=http://downloadapi:8001
+      - SEND_API_BASE_URL=http://sendingapi:8002
+      - DATABASE_API_BASE_URL=http://dbapi:8000
+    networks: [internal]
+
+  dbapi:
+    build: ./DatabaseAPI
+    restart: always
+    networks: [internal]
+
+  downloadapi:
+    build: ./DownloadAPI
+    restart: always
+    networks: [internal]
+
+  sendingapi:
+    build: ./SendingAPI
+    restart: always
+    depends_on: [dbapi]
+    environment:
+      - BOT_TOKEN=6338019607:AAG59LrJuKePOlGgepikMt86h14riUZ-vPA
+      - DATABASE_API_BASE_URL=http://dbapi:8000
+    networks: [internal]
+
+networks:
+  internal:
+    driver: bridge
+    internal: true

@@ -1,0 +1,24 @@
+from TgBot.Services.forChat.UserState import UserState
+from TgBot.Services.forChat.Response import Response
+from TgBot import markups
+import TgBot.Services.AsyncTasks as tasks
+
+class TasksState(UserState):
+    async def start_msg(self):
+        if len(tasks.tasks_controller.tasks) == 0:
+            return Response(text="[Список плану]\nСписок пустий!", is_end=True, redirect="/menu")
+        try:
+            text = ""
+            for i in tasks.tasks_controller.tasks:
+                text += f"{i.time} - {i.data['current_name']}\n"
+            return Response(text=text, is_end=True, redirect="/menu")
+        except Exception as ex:
+            text = "[Список плану]\n"
+            for i in range(0, 15):
+                text += f"{tasks.tasks_controller.tasks[i].time} - {tasks.tasks_controller.tasks[i].data['current_name']}\n"
+            text += "Та інші..."
+            return Response(text=text, buttons=markups.generate_cancel())
+
+    async def next_btn_clk(self, data_btn: str):
+        if data_btn == "/cancel":
+            return Response(is_end=True, redirect="/menu")

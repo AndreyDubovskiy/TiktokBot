@@ -1,0 +1,11 @@
+pyTelegramBotAPI
+aiohttp
+moviepy
+pandas
+plotnine
+instaloader
+beautifulsoup4
+pytubefix
+pyffmpeg
+yt_dlp
+httpx

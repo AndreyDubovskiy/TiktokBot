@@ -1,0 +1,6 @@
+aiohttp
+fake-useragent
+fastapi
+uvicorn
+httpx
+python-multipart
