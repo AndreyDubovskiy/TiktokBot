@@ -19,7 +19,7 @@ import io
 
 from Services.download.instagramm.InstaManager import static_insta_manager
 
-tokkey = os.getenv("TOKEN_BOT")
+tokkey = os.getenv("BOT_TOKEN")
 #tokkey = '6338019607:AAG59LrJuKePOlGgepikMt86h14riUZ-vPA'
 #tokkey = '6338019607:AAGtmGTAKAZSSnNkQ3BbO0gkJm1_huVvhqI'
 
