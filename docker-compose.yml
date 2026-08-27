@@ -5,9 +5,9 @@ services:
     depends_on: [downloadapi, sendingapi, dbapi]
     environment:
       - BOT_TOKEN=6338019607:AAG59LrJuKePOlGgepikMt86h14riUZ-vPA
-      - DOWNLOAD_API_BASE_URL=http://127.0.0.1:8001
-      - SEND_API_BASE_URL=http://127.0.0.1:8002
-      - DATABASE_API_BASE_URL=http://127.0.0.1:8000
+      - DOWNLOAD_API_BASE_URL=http://downloadapi:8001
+      - SEND_API_BASE_URL=http://sendingapi:8002
+      - DATABASE_API_BASE_URL=http://dbapi:8000
     networks: [internal]
 
   dbapi:
@@ -30,7 +30,7 @@ services:
     depends_on: [dbapi]
     environment:
       - BOT_TOKEN=6338019607:AAG59LrJuKePOlGgepikMt86h14riUZ-vPA
-      - DATABASE_API_BASE_URL=http://127.0.0.1:8000
+      - DATABASE_API_BASE_URL=http://dbapi:8000
     networks: [internal]
     expose:
       - "8002"

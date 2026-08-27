@@ -57,4 +57,4 @@ async def get_file(tg_id: str) -> StreamingResponse:
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", reload = True, port=8001)
+    uvicorn.run("main:app",host="0.0.0.0", port=8001, reload = True)
