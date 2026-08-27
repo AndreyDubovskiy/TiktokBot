@@ -1,6 +1,7 @@
 pyTelegramBotAPI
 aiohttp
 moviepy
+fake-useragent
 pandas
 plotnine
 instaloader
