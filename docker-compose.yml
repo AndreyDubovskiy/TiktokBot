@@ -14,11 +14,15 @@ services:
     build: ./DataBaseAPI
     restart: always
     networks: [internal]
+    expose:
+      - "8000"
 
   downloadapi:
     build: ./DownloadAPI
     restart: always
     networks: [internal]
+    expose:
+      - "8001"
 
   sendingapi:
     build: ./SendingAPI
@@ -28,6 +32,8 @@ services:
       - BOT_TOKEN=6338019607:AAG59LrJuKePOlGgepikMt86h14riUZ-vPA
       - DATABASE_API_BASE_URL=http://dbapi:8000
     networks: [internal]
+    expose:
+      - "8002"
 
 networks:
   internal:
