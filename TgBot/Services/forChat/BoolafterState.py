@@ -1,6 +1,6 @@
-from TgBot.Services.forChat.UserState import UserState
-from TgBot.Services.forChat.Response import Response
-from TgBot import config_controller, markups
+from Services.forChat.UserState import UserState
+from Services.forChat.Response import Response
+import config_controller, markups
 
 
 class BoolafterState(UserState):

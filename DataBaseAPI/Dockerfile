@@ -1,7 +1,6 @@
 FROM python:3.9-slim
 WORKDIR /app
-RUN mkdir /app/DataBaseAPI
-COPY . /app/DataBaseAPI
+COPY . /app
 RUN pip install --upgrade pip
-RUN pip install -r DataBaseAPI/requirements.txt
-CMD ["python", "DataBaseAPI/main.py"]
+RUN pip install -r requirements.txt
+CMD ["python", "main.py"]

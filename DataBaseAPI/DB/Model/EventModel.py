@@ -1,5 +1,5 @@
-from DataBaseAPI.DB.Model.BaseModel import BaseModel
-from DataBaseAPI.DB.Model.imports import *
+from DB.Model.BaseModel import BaseModel
+from DB.Model.imports import *
 
 
 class EventModel(BaseModel):

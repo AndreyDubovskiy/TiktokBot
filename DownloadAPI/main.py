@@ -8,7 +8,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import StreamingResponse
 from httpx import AsyncClient
 
-from DownloadAPI.TikTok.TikTokManager import static_tiktok_manager
+from TikTok.TikTokManager import static_tiktok_manager
 
 app = FastAPI()
 

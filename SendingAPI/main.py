@@ -7,7 +7,7 @@ from uuid import uuid4
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.encoders import jsonable_encoder
 from typing import List, Optional
-from SendingAPI.utils.SendManager import static_send_manager
+from utils.SendManager import static_send_manager
 
 app = FastAPI()
 broadcast_jobs = {}

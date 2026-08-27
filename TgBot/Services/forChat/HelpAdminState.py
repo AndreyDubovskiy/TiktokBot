@@ -1,5 +1,5 @@
-from TgBot.Services.forChat.UserState import UserState
-from TgBot.Services.forChat.Response import Response
+from Services.forChat.UserState import UserState
+from Services.forChat.Response import Response
 from telebot.async_telebot import AsyncTeleBot
 
 

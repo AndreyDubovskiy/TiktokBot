@@ -3,7 +3,7 @@ from typing import List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from DataBaseAPI.DB.Model.UserModel import UserModel
+from DB.Model.UserModel import UserModel
 
 class  UserController:
 

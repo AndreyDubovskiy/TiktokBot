@@ -1,6 +1,6 @@
-from TgBot.Services.forChat.UserState import UserState
-from TgBot.Services.forChat.Response import Response
-from TgBot import markups
+from Services.forChat.UserState import UserState
+from Services.forChat.Response import Response
+import markups
 
 
 class MenuState(UserState):

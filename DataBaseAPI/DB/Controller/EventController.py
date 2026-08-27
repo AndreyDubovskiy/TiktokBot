@@ -1,6 +1,6 @@
 import datetime
 
-from DataBaseAPI.DB.Model.EventModel import EventModel
+from DB.Model.EventModel import EventModel
 
 from sqlalchemy.ext.asyncio import AsyncSession
 

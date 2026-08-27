@@ -4,18 +4,18 @@ from typing import List
 import uvicorn
 import asyncio
 
-from DataBaseAPI.DB.Controller.EventController import EventController
-from DataBaseAPI.DB.Controller.UserController import UserController
-from DataBaseAPI.DB.db import create_all_tables, get_async_session, start_database
+from DB.Controller.EventController import EventController
+from DB.Controller.UserController import UserController
+from DB.db import create_all_tables, get_async_session, start_database
 from fastapi import FastAPI, HTTPException, Depends
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from DataBaseAPI.Scheme.UserScheme import (UserScheme,
+from Scheme.UserScheme import (UserScheme,
                                            UserWithIdScheme,
                                            UserOnlyIdScheme,
                                            UserAllOptional )
-from DataBaseAPI.Scheme.EventScheme import (EventScheme,
+from Scheme.EventScheme import (EventScheme,
                                             EventWithTimeScheme,
                                             EventWithIdScheme,
                                             EventOnlyIdScheme,

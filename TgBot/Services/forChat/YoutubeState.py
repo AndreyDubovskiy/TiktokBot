@@ -1,7 +1,7 @@
-from TgBot.Services.forChat.UserState import UserState
-from TgBot.Services.forChat.Response import Response
-from TgBot import config_controller, markups
-from TgBot.Services.download.youtube.YoutubeManager import static_youtube_manager
+from Services.forChat.UserState import UserState
+from Services.forChat.Response import Response
+import config_controller, markups
+from Services.download.youtube.YoutubeManager import static_youtube_manager
 import os
 
 class YoutubeState(UserState):

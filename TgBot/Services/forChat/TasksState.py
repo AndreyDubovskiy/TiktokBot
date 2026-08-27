@@ -1,7 +1,7 @@
-from TgBot.Services.forChat.UserState import UserState
-from TgBot.Services.forChat.Response import Response
-from TgBot import markups
-import TgBot.Services.AsyncTasks as tasks
+from Services.forChat.UserState import UserState
+from Services.forChat.Response import Response
+import markups
+import Services.AsyncTasks as tasks
 
 class TasksState(UserState):
     async def start_msg(self):

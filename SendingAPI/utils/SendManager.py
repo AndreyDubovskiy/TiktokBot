@@ -1,4 +1,4 @@
-import SendingAPI.db.database as db
+import db.database as db
 import asyncio
 import httpx
 import os

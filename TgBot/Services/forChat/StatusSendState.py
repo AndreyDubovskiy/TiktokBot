@@ -1,7 +1,7 @@
-from TgBot.Services.forChat.UserState import UserState
-from TgBot.Services.forChat.Response import Response
+from Services.forChat.UserState import UserState
+from Services.forChat.Response import Response
 
-from TgBot.Services.utils_for_api.forSendApi import static_send_api
+from Services.utils_for_api.forSendApi import static_send_api
 
 class StatusSendState(UserState):
     async def start_msg(self):

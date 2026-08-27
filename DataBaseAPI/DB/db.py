@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from DataBaseAPI.DB.Model.BaseModel import BaseModel
-from DataBaseAPI.DB.Model.UserModel import UserModel
-from DataBaseAPI.DB.Model.EventModel import EventModel
+from DB.Model.BaseModel import BaseModel
+from DB.Model.UserModel import UserModel
+from DB.Model.EventModel import EventModel
 
 
 #engine = create_async_engine("sqlite+aiosqlite:///mainbase.db")

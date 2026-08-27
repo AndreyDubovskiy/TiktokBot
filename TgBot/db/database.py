@@ -4,8 +4,8 @@ import os
 
 URL = os.getenv("DATABASE_API_BASE_URL", "http://127.0.0.1:8000")
 
-from TgBot.db.models.UserModel import UserModel
-from TgBot.db.models.EventModel import EventModel
+from db.models.UserModel import UserModel
+from db.models.EventModel import EventModel
 from typing import List
 
 async def delete_user(user_id:int) -> bool:

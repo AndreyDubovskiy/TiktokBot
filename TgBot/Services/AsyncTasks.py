@@ -2,10 +2,10 @@ import asyncio
 import datetime
 import pickle
 
-from TgBot import config_controller
-import TgBot.Services.Logger as log
+import config_controller
+import Services.Logger as log
 from telebot.async_telebot import AsyncTeleBot
-from TgBot.Services.utils_for_api.forSendApi import static_send_api
+from Services.utils_for_api.forSendApi import static_send_api
 
 bot: AsyncTeleBot = None
 

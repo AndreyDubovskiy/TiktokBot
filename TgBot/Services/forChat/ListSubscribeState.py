@@ -1,9 +1,9 @@
-from TgBot.Services.forChat.UserState import UserState
-from TgBot.Services.forChat.Response import Response
+from Services.forChat.UserState import UserState
+from Services.forChat.Response import Response
 from telebot.async_telebot import AsyncTeleBot
-from TgBot import config_controller, markups
+import config_controller, markups
 import datetime
-from TgBot.Services.forStatistic.StatisticObj import StatisticObj
+from Services.forStatistic.StatisticObj import StatisticObj
 
 class ListSubscribeState(UserState):
     def __init__(self, user_id: str, user_chat_id: str, bot: AsyncTeleBot):

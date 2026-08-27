@@ -1,7 +1,6 @@
 FROM python:3.9-slim
 WORKDIR /app
-RUN mkdir /app/SendingAPI
-COPY . /app/SendingAPI
+COPY . /app
 RUN pip install --upgrade pip
-RUN pip install -r SendingAPI/requirements.txt
-CMD ["python", "SendingAPI/main.py"]
+RUN pip install -r requirements.txt
+CMD ["python", "main.py"]

@@ -1,15 +1,15 @@
 import datetime
 
-from TgBot.Services.forChat.UserState import UserState
-from TgBot.Services.forChat.Response import Response
+from Services.forChat.UserState import UserState
+from Services.forChat.Response import Response
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
-from TgBot.Services.forStatistic.StatisticObj import StatisticObj
-from TgBot import config_controller, markups
-import TgBot.Services.Logger as log
-import TgBot.Services.AsyncTasks as tasks
+from Services.forStatistic.StatisticObj import StatisticObj
+import config_controller, markups
+import Services.Logger as log
+import Services.AsyncTasks as tasks
 
-from TgBot.Services.utils_for_api.forSendApi import static_send_api
+from Services.utils_for_api.forSendApi import static_send_api
 
 class PostState(UserState):
     def __init__(self, user_id: str, user_chat_id: str, bot: AsyncTeleBot):

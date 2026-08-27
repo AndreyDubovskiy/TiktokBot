@@ -2,8 +2,8 @@ import pytest
 from httpx import AsyncClient, ASGITransport
 import datetime
 
-from DataBaseAPI.main import app
-from DataBaseAPI.DB.db import start_database, create_all_tables, drop_all_tables
+from main import app
+from DB.db import start_database, create_all_tables, drop_all_tables
 
 @pytest.mark.asyncio
 async def test_get_user_zero():

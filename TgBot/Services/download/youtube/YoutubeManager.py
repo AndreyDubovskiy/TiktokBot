@@ -2,8 +2,8 @@ import asyncio
 
 from fake_useragent import UserAgent
 import time
-import TgBot.Services.download.youtube.downloader as youtube_downloader
-from TgBot.Services.upload.fileconvoy.uploader import upload_file
+import Services.download.youtube.downloader as youtube_downloader
+from Services.upload.fileconvoy.uploader import upload_file
 
 
 # async def down_async(url, outfile):

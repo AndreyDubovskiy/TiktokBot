@@ -3,7 +3,7 @@ from typing import List
 
 from fake_useragent import UserAgent
 from httpx import AsyncClient
-import DownloadAPI.utils.media_type as mt
+import utils.media_type as mt
 import time
 
 ua = UserAgent()

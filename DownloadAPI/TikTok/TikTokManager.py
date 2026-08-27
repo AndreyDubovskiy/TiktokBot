@@ -4,8 +4,8 @@ import time
 import random
 from typing import List
 
-from DownloadAPI.TikTok.download1 import static_downloader1
-from DownloadAPI.TikTok.download2 import static_downloader2
+from TikTok.download1 import static_downloader1
+from TikTok.download2 import static_downloader2
 
 class TikTokManager:
     def __init__(self, count_limit: int = 0):

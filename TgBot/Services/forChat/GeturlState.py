@@ -1,10 +1,10 @@
-from TgBot.Services.forChat.UserState import UserState
+from Services.forChat.UserState import UserState
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
-import TgBot.Services.Logger as log
+import Services.Logger as log
 
-from TgBot import config_controller
-import TgBot.db.database as db
+import config_controller
+import db.database as db
 
 class GeturlState(UserState):
     def __init__(self, user_id: str, user_chat_id: str, bot: AsyncTeleBot):

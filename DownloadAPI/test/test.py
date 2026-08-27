@@ -2,7 +2,7 @@ import pytest
 from httpx import AsyncClient, ASGITransport
 import time
 
-from DownloadAPI.main import app
+from main import app
 
 TEST_URL_VIDEO = "https://vt.tiktok.com/ZSHUASECY/"
 TEST_URL_PHOTO = "https://vt.tiktok.com/ZSH5kDBVT/"

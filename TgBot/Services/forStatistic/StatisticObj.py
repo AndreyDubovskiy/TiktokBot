@@ -1,4 +1,4 @@
-import TgBot.db.database as db
+import db.database as db
 import datetime
 from dateutil.relativedelta import relativedelta
 from plotnine import ggplot, aes, geom_line, theme, element_text

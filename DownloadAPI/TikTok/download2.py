@@ -1,8 +1,8 @@
 from typing import List
 
 from fake_useragent import UserAgent
-import DownloadAPI.utils.media_type as mt
-import DownloadAPI.utils.main_browser as browser
+import utils.media_type as mt
+import utils.main_browser as browser
 import time
 
 class Downloader2:

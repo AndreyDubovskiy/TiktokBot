@@ -3,8 +3,8 @@ import httpx
 import json
 import os
 
-from SendingAPI.db.models.UserModel import UserModel
-from SendingAPI.db.models.EventModel import EventModel
+from db.models.UserModel import UserModel
+from db.models.EventModel import EventModel
 from typing import List
 
 URL = os.getenv("DATABASE_API_BASE_URL", "http://127.0.0.1:8000")
